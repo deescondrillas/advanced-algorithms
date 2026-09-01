@@ -50,5 +50,6 @@ int main() {
       << " µs" << endl;
 
   cout << "!!!Dado que Trie es un set, al ignorar acentos existen palabras que colapsan (como robo y robó)" << endl;
+  if(resultado_trie.size()) cout << "\nAutocompletado: " << resultado_trie.back() << endl;
   return 0;
 }

@@ -27,25 +27,28 @@ int main() {
     trie.insert(word);
   }
 
+  cout << "Test actual: " << TEST_FILE << "\n" << endl;
+
   string prefix;
-  cout << "Buscar con prefijo: " << endl;
+  cout << "Buscar con prefijo: ";
   cin >> prefix;
   trie.transform(prefix);
+  cout << endl;
   
   auto inicio = chrono::high_resolution_clock::now();
   auto resultado_fb = bruteForce(list, prefix);
   auto fin = chrono::high_resolution_clock::now();
   cout << "Fuerza bruta encontró " << resultado_fb.size() << " palabras en "
        << chrono::duration_cast<chrono::microseconds>(fin - inicio).count()
-       << " microsegundos" << endl;
+       << " µs" << endl;
 
   inicio = chrono::high_resolution_clock::now();
   auto resultado_trie = trie.complete(prefix);
   fin = chrono::high_resolution_clock::now();
   cout << "Trie encontró " << resultado_trie.size() << " palabras en "
       << chrono::duration_cast<chrono::microseconds>(fin - inicio).count() 
-      << " microsegundos" << endl;
+      << " µs" << endl;
 
-  cout << "Dado que trie es un set, al ignorar acentos existen palabras que colapsan (como robo y robó)" << endl;
+  cout << "!!!Dado que Trie es un set, al ignorar acentos existen palabras que colapsan (como robo y robó)" << endl;
   return 0;
 }

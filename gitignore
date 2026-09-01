@@ -1,0 +1,13 @@
+.DS_Store
+*.log
+*.o
+*.out
+*.exe
+*.a
+*.so
+*.dylib
+*.dll
+build/
+.vscode/
+.idea/
+*.swp

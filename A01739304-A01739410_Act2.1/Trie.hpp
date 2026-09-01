@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <unordered_map>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -13,24 +13,40 @@ using namespace std;
 
 class TrieNode {
 public:
-    TrieNode();
+  TrieNode();
 
-    // O(|p|)
-    bool insert(const string& s, int idx = 0);
+  // Transforma patrón a minúsculas sin acentos --O(|p|)
+  void transform(string& s);
+  
+  // Insertar patrón en el Trie --O(|p|)
+  bool insert(const string& s, int idx = 0);
 
-    // O(|p|)
-    TrieNode* walk(const string& s, int idx = 0);
+  // Eliminar patrón del Trie --O(|p|)
+  bool remove(const string& s, int idx = 0);
 
-    // O(|p|)
-    bool membershipQuery(const string& s, int idx = 0);
+  // Seguir un patrón a través del Trie --O(|p|)
+  TrieNode* walk(const string& s, int idx = 0);
 
-    // O(|n|)
-    void produce(vector<string>& results, const string& pathChars = "");
+  // Revisar si un string es parte del Trie --O(|p|)
+  bool membershipQuery(const string& s, int idx = 0);
 
-    // O(|n|)
-    vector<string> complete(const string& prefix);
+  // Recuperar todos los strings miembros del Trie --O(|n|)
+  void produce(vector<string>& results, const string& pathChars = "");
 
-    private:
-        unordered_map<char, TrieNode*> children;
-        bool is_end = false;
+  // Recuperar todos los string miembros de un Subtrie --O(|n|)
+  vector<string> complete(const string& prefix);
+
+  private:
+    map<char, TrieNode*> children;
+    // ASCII de los acentos (segundo byte)
+    map<char, char> dictionary {
+      {char(161), 'a'},
+      {char(169), 'e'},
+      {char(173), 'i'},
+      {char(177), '~'},
+      {char(179), 'o'},
+      {char(186), 'u'},
+      {char(188), 'u'}
+    };
+    bool is_end = false;
 };

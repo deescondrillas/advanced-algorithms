@@ -1,0 +1,12 @@
+# Plan
+Search 3 patterns in 2 strings  --Suffix array › Q · O(m + logn) + O(n)
+Longest Palindrome              --Suffix array › O(n)
+Longest Common Substring        --Suffix array › O(n)
+
+
+Suffix Array & LCP
+
+Sort O(n log n)
+SA-IS O(n)        --sort
+LCP de dos weyes  --LCP[a, b]
+LCA del LCP[a, b] --

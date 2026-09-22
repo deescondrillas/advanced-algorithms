@@ -7,6 +7,7 @@
 
 TrieNode::TrieNode() {}
 
+// Transforma patrón a minúsculas sin acentos --O(|p|)
 void TrieNode::transform(string& s) {
   for (int i = 0; i < s.size(); ++i) {
     // Detectar caracteres especiales (primer byte = 195)

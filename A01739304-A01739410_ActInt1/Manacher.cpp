@@ -3,14 +3,13 @@
  *   - Octavio Hernández Loyo | A01739304
  * Fecha: 2026-09-24 */
 
-#include "Manacher.hpp"
 #include "visual/ManacherState.hpp"
+#include "Manacher.hpp"
 
 /// Constructor para encontrar el palíndromo más largo -- O(|s|)
 /// Conserva todos los caracteres recibidos
 Manacher::Manacher(const string& theFullText, const Observer& observer) {
   this->fullText = theFullText;
-  palindromeText.reserve(2 * fullText.size() + 1);
   palindromeText += DELIMITER;
   for (char &current : fullText) {
     palindromeText += current;
@@ -24,10 +23,9 @@ Manacher::Manacher(const string& theFullText, const Observer& observer) {
 /// Crea los radios de los palíndromos usando simetría -- O(|s|)
 /// center y right localizan el palíndromo más lejano a la derecha
 void Manacher::buildPalindromeArray(const Observer& observer) {
+  ManacherState state;
   int center = 0;
   int right = 0;
-  int textSize = static_cast<int>(palindromeText.size());
-  ManacherState state;
 
   // El observador recibe el estado real; sin él, el recorrido termina normalmente.
   auto report = [&](const char* phase) {
@@ -44,7 +42,7 @@ void Manacher::buildPalindromeArray(const Observer& observer) {
   };
   report("ready");
 
-  for (int i = 0; i < textSize; ++i) {
+  for (int i = 0; i < palindromeText.size(); ++i) {
     int matches = 0;
     state.i = i;
     state.matches = 0;
@@ -64,7 +62,7 @@ void Manacher::buildPalindromeArray(const Observer& observer) {
     // Comprueba únicamente los caracteres extras de la simetría que pueden haber
     while (
       i - matches - 1 >= 0 && 
-      i + matches + 1 < textSize
+      i + matches + 1 < palindromeText.size()
     ) {
       state.compareLeft = i - matches - 1;
       state.compareRight = i + matches + 1;
@@ -76,7 +74,7 @@ void Manacher::buildPalindromeArray(const Observer& observer) {
       state.matches = matches;
       report("expand");
     }
-    if (i - matches - 1 < 0 || i + matches + 1 >= textSize) {
+    if (i - matches - 1 < 0 || i + matches + 1 >= palindromeText.size()) {
       state.compareLeft = i - matches - 1;
       state.compareRight = i + matches + 1;
       state.comparison = -1;

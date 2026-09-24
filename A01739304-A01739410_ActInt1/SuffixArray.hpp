@@ -5,13 +5,21 @@
 
 #pragma once
 
+#include <functional>
 #include <vector>
 #include <string>
 
 using namespace std;
 
+struct LcsState;
+struct FindState;
+
 class SuffixArray {
   public:
+    /// Observadores opcionales; reciben cada operación con el SA y el LCP
+    using FindObserver = function<void(const FindState&, const vector<int>&, const vector<int>&)>;
+    using LcsObserver = function<void(const LcsState&, const vector<int>&, const vector<int>&)>;
+
     /// Constructor para el suffix array de dos strings concatenados -- O(|s₁| + |s₂|)
   	SuffixArray(const string&, const string&);
 
@@ -19,10 +27,10 @@ class SuffixArray {
   	SuffixArray(const string&);
 
     /// Determina si un patrón p se encuentra contenido en el texto s -- O(|p| + |s|)
-    int find(const string&);
+    int find(const string&, const FindObserver& observer = FindObserver());
 
     /// Encuentra el Longest Common Substring de dos strings -- O(|s₁| + |s₂|)
-  	vector<int> lcs();
+  	vector<int> lcs(const LcsObserver& observer = LcsObserver());
   	
   private:
   	const char DELIMITER = '\0';
@@ -38,8 +46,12 @@ class SuffixArray {
     /// Verifica si dos sufijos pertenecen a diferentes textos -- O(1)
     bool belongToDistinctStrings(const int&, const int&);
 
+    /// Traduce la mejor posición del LCP a los rangos del LCS -- O(1)
+    vector<int> lcsResult(const int&) const;
+
     /// Encuentra el match más grande de p en s, desde s[start] -- O(|p|)
-    void iteratePattern(const string&, const int&, int&);
+    void iteratePattern(const string&, const int&, int&,
+                        const function<void(bool)>& report = function<void(bool)>());
     
     /// Crea el Suffix Array y el Suffix Array inverso --O(|s|)
     void buildSuffixArray();

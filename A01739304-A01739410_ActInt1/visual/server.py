@@ -1,4 +1,4 @@
-"""Servidor local de archivos y puente hacia el proceso C++ de Manacher."""
+"""Servidor local de archivos y puente hacia los procesos C++ de la visualización."""
 
 import argparse
 import json
@@ -11,16 +11,30 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 ASSETS = {
     "/": ("index.html", "text/html; charset=utf-8"),
+    "/lcs.html": ("lcs.html", "text/html; charset=utf-8"),
+    "/find.html": ("find.html", "text/html; charset=utf-8"),
     "/style.css": ("style.css", "text/css; charset=utf-8"),
+    "/session.js": ("session.js", "text/javascript; charset=utf-8"),
+    "/grid.js": ("grid.js", "text/javascript; charset=utf-8"),
     "/app.js": ("app.js", "text/javascript; charset=utf-8"),
+    "/lcs.js": ("lcs.js", "text/javascript; charset=utf-8"),
+    "/find.js": ("find.js", "text/javascript; charset=utf-8"),
 }
+# Cada modo es un proceso C++ con su propia sesion: bandera, campos y minimo.
+MODES = {
+    "manacher": ("--manacher-session", ("text",), 0),
+    "lcs": ("--lcs-session", ("textA", "textB"), 1),
+    "find": ("--find-session", ("text", "pattern"), 1),
+}
+ALPHABET = re.compile(r"[0-9A-F\r\n]*")
+MAX_LENGTH = 10000
 
 
 class Engine:
-    def __init__(self, executable):
+    def __init__(self, executable, flag):
         self.lock = threading.Lock()
         self.process = subprocess.Popen(
-            [str(executable), "--manacher-session"],
+            [str(executable), flag],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
             text=True, encoding="ascii", bufsize=1,
         )
@@ -44,6 +58,50 @@ class Engine:
             except subprocess.TimeoutExpired:
                 self.process.kill()
                 self.process.wait()
+
+
+class Engines:
+    """Un proceso por modo, creado la primera vez que esa vista se usa."""
+
+    def __init__(self, executable):
+        self.executable = executable
+        self.lock = threading.Lock()
+        self.engines = {}
+
+    def get(self, mode):
+        with self.lock:
+            if mode not in self.engines:
+                self.engines[mode] = Engine(self.executable, MODES[mode][0])
+            return self.engines[mode]
+
+    def close(self):
+        for engine in self.engines.values():
+            engine.close()
+
+
+def route(path):
+    """/api/reset y /api/step siguen siendo los de Manacher."""
+    parts = path.strip("/").split("/")
+    if parts[:1] != ["api"] or parts[-1] not in ("reset", "step"):
+        return None, None
+    if len(parts) == 2:
+        return "manacher", parts[1]
+    if len(parts) == 3 and parts[1] in MODES:
+        return parts[1], parts[2]
+    return None, None
+
+
+def reset_command(mode, body):
+    fields, minimum = MODES[mode][1], MODES[mode][2]
+    encoded = []
+    for field in fields:
+        value = body.get(field)
+        if not isinstance(value, str) or not minimum <= len(value) <= MAX_LENGTH:
+            raise ValueError("Usa de %d a %d caracteres en cada campo." % (minimum, MAX_LENGTH))
+        if ALPHABET.fullmatch(value) is None:
+            raise ValueError("Solo se admiten 0-9, A-F y saltos de linea.")
+        encoded.append(value.encode("ascii").hex())
+    return "RESET " + " ".join(encoded)
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -81,7 +139,8 @@ class Handler(BaseHTTPRequestHandler):
         if self.headers.get("Origin") != expected_origin:
             self.send_json(403, {"error": "Abre la interfaz desde " + expected_origin})
             return
-        if self.path not in ("/api/reset", "/api/step"):
+        mode, action = route(self.path)
+        if mode is None:
             self.send_json(404, {"error": "Ruta no encontrada."})
             return
         try:
@@ -91,15 +150,8 @@ class Handler(BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(length))
             if not isinstance(body, dict):
                 raise ValueError("Solicitud invalida.")
-            command = "NEXT"
-            if self.path == "/api/reset":
-                text = body.get("text")
-                if not isinstance(text, str) or len(text) > 10000:
-                    raise ValueError("Usa hasta 10,000 caracteres.")
-                if re.fullmatch(r"[0-9A-F\r\n]*", text) is None:
-                    raise ValueError("Solo se admiten 0-9, A-F y saltos de linea.")
-                command = "RESET " + text.encode("ascii").hex()
-            result = self.server.engine.request(command)
+            command = reset_command(mode, body) if action == "reset" else "NEXT"
+            result = self.server.engines.get(mode).request(command)
             self.send_json(200, result)
         except (ValueError, UnicodeError) as error:
             self.send_json(400, {"error": str(error)})
@@ -118,16 +170,16 @@ def main():
     # Primero reserva el puerto: si esta ocupado, no deja un proceso C++ huerfano.
     server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
     try:
-        server.engine = Engine(executable)
-        print("Manacher: http://127.0.0.1:" + str(server.server_port), flush=True)
+        server.engines = Engines(executable)
+        print("Visualizacion: http://127.0.0.1:" + str(server.server_port), flush=True)
         print("Deja esta ventana abierta. Ctrl+C para cerrar.", flush=True)
         server.serve_forever()
     except KeyboardInterrupt:
         pass
     finally:
         server.server_close()
-        if hasattr(server, "engine"):
-            server.engine.close()
+        if hasattr(server, "engines"):
+            server.engines.close()
 
 
 if __name__ == "__main__":

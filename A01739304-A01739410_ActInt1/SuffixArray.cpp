@@ -3,7 +3,9 @@
  *   - Franco De Escondrillas | A01739410
  * Fecha: 2026-09-24 */
 
+#include "visual/SuffixArrayState.hpp"
 #include "SuffixArray.hpp"
+#include "SaIs.hpp"
 #include "algorithm"
 
 
@@ -37,33 +39,115 @@ SuffixArray::SuffixArray(const string& theFullText) {
 
 /// Determina si un patrón p se encuentra contenido en el texto s -- O(|p| + |s|)
 /// Se emplea una búsqueda secuencial, similar a KMP
-int SuffixArray::find(const string& pattern) {
+int SuffixArray::find(const string& pattern, const FindObserver& observer) {
+  FindState state;
   int firstMatchIdx = -1;
   int matches = 0;
+
+  // El observador recibe el estado real; sin él, el recorrido termina normalmente.
+  auto report = [&](const char* phase) {
+    if (!observer) return;
+    state.phase = phase;
+    state.matches = matches;
+    state.firstMatchIdx = firstMatchIdx;
+    observer(state, sa, lcp);
+    ++state.step;
+  };
+  report("ready");
+
   for (int& start : sa) {
-    if (lcp[sortedSa[start]] < matches)
+    state.column = sortedSa[start];
+    state.start = start;
+    state.lcpHere = lcp[sortedSa[start]];
+    state.comparePattern = state.compareText = -1;
+    state.comparison = -1;
+    report("select");
+    if (lcp[sortedSa[start]] < matches) {
+      report("prune");
+      state.finished = true;
+      report("done");
       return firstMatchIdx;
-    iteratePattern(pattern, start, matches);
-    if (matches == pattern.size())
+    }
+    // Cada comparación del sufijo con el patrón se publica desde iteratePattern.
+    iteratePattern(pattern, start, matches, [&](bool equal) {
+      state.comparePattern = matches;
+      state.compareText = start + matches;
+      state.comparison = equal;
+      ++state.comparisons;
+      report("compare");
+    });
+    if (matches == pattern.size()) {
       firstMatchIdx = firstMatchIdx == -1 ? start : min(firstMatchIdx, start);
+      report("match");
+    }
   }
+  state.finished = true;
+  report("done");
   return firstMatchIdx;
 } 
 
 
 /// Encuentra el Longest Common Substring de dos strings -- O(|s₁| + |s₂|)
 /// Regresa {inicio en textA, fin en textA, inicio en textB, fin en textB}
-vector<int> SuffixArray::lcs() {
+vector<int> SuffixArray::lcs(const LcsObserver& observer) {
+  LcsState state;
   int idxBest = 0;
+
+  // El observador recibe el estado real; sin él, el recorrido termina normalmente.
+  auto report = [&](const char* phase) {
+    if (!observer) return;
+    state.phase = phase;
+    state.idxBest = idxBest;
+    state.bestLength = lcp[idxBest];
+    vector<int> partial = lcsResult(idxBest);
+    state.startA = partial[0];
+    state.endA = partial[1];
+    state.startB = partial[2];
+    state.endB = partial[3];
+    observer(state, sa, lcp);
+    ++state.step;
+  };
+  report("ready");
 
   for (int i = 1; i < sa.size(); ++i) {
     int idxCurSuffix = sa[i - 1];
     int idxNextSuffix = sa[i];
-    if (
-      belongToDistinctStrings(idxCurSuffix, idxNextSuffix)
-      && (lcp[i] > lcp[idxBest])
-    ) idxBest = i;
+    state.i = i;
+    state.lcpHere = lcp[i];
+    state.distinct = state.improved = false;
+    report("select");
+
+    bool distinct = belongToDistinctStrings(idxCurSuffix, idxNextSuffix);
+    state.distinct = distinct;
+    state.improved = distinct && lcp[i] > lcp[idxBest];
+    report("check");
+
+    if (distinct && (lcp[i] > lcp[idxBest])) {
+      idxBest = i;
+      report("update");
+    }
   }
+  state.finished = true;
+  report("done");
+
+  return lcsResult(idxBest);
+}
+
+
+/// Verifica si dos sufijos pertenecen a diferentes textos -- O(1)
+/// Uno deberá ser menor y el otro mayor a textA.size()
+bool SuffixArray::belongToDistinctStrings(const int& i, const int& j) {
+  if (fullText[i] == DELIMITER || fullText[j] == DELIMITER)
+    return false;
+  return int(i - textA.size()) * int(j - textA.size()) < 0;
+}
+
+
+/// Traduce la mejor posición del LCP a los rangos del LCS -- O(1)
+/// idxBest en 0 significa que los textos no comparten ningún substring
+vector<int> SuffixArray::lcsResult(const int& idxBest) const {
+  if (!idxBest)
+    return {0, -1, 0, -1};
 
   int idxA = min(sa[idxBest], sa[idxBest - 1]);
   int idxB = max(sa[idxBest], sa[idxBest - 1]);
@@ -77,42 +161,40 @@ vector<int> SuffixArray::lcs() {
 }
 
 
-/// Verifica si dos sufijos pertenecen a diferentes textos -- O(1)
-/// Uno deberá ser menor y el otro mayor a textA.size()
-bool SuffixArray::belongToDistinctStrings(const int& i, const int& j) {
-  if (fullText[i] == DELIMITER || fullText[j] == DELIMITER)
-    return false;
-  return int(i - textA.size()) * int(j - textA.size()) < 0;
-}
-
-
 /// Encuentra el match más grande de p en s, desde s[start] -- O(|p|)
 /// Itera sobre p y s mientras el siguiente caracter coincida
-void SuffixArray::iteratePattern(const string& pattern, const int& start, int& match) {
+void SuffixArray::iteratePattern(const string& pattern, const int& start, int& match,
+                                 const function<void(bool)>& report) {
   while (
     match < pattern.size() &&
-    match < fullText.size() - start &&
-    pattern[match] == fullText[start + match]
-  ) match++;
+    match < fullText.size() - start
+  ) {
+    bool equal = pattern[match] == fullText[start + match];
+    if (report) report(equal);
+    if (!equal) break;
+    match++;
+  }
 }
 
 
 /// Crea el Suffix Array y el Suffix Array inverso --O(|s|)
 /// SA índice -> posición · sortedSA posición -> índice
 void SuffixArray::buildSuffixArray() {
-  for (int i = 0; i < sa.size(); ++i)
-    sa[i] = i;
   sortSuffixArray();
   for (int i = 0; i < sa.size(); ++i)
     sortedSa[sa[i]] = i;
 }
 
 
-/// Change later to SA-IS
+/// Ordena el SA con el algoritmo SA-IS -- O(|s|)
+/// Recodifica el texto a enteros
 void SuffixArray::sortSuffixArray() {
-  sort(sa.begin(), sa.end(), [this](int sufixA, int sufixB) {
-		return fullText.compare(sufixA, string::npos, fullText, sufixB, string::npos) < 0;
-	});
+  vector<int> text(fullText.size());
+  for (int i = 0; i < fullText.size(); ++i)
+    text[i] = (unsigned char) fullText[i] + 1;
+  text.back() = 0;
+
+  sa = saIs(text, BYTE_ALPHABET);
 }
 
 

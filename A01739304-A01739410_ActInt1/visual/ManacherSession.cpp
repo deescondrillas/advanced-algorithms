@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "ManacherState.hpp"
+#include "SessionText.hpp"
 
 namespace {
 // Cada respuesta contiene solo una ventana de radios, no una copia del arreglo.
@@ -33,35 +34,10 @@ void writeState(const ManacherState& state, const vector<int>& radius, const str
   cout << "]";
   // La cadena se transmite una vez al cargar; los pasos siguientes solo envían estado.
   if (text) {
-    cout << ",\"text\":\"";
-    for (char current : *text) {
-      if (current == '\n') cout << "\\n";
-      else if (current == '\r') cout << "\\r";
-      else cout << current; // decodeText solo admite 0-9, A-F, CR y LF.
-    }
-    cout << '"';
+    cout << ",\"text\":";
+    writeJsonText(*text);
   }
   cout << "}" << endl;
-}
-
-int hexDigit(char value) {
-  if (value >= '0' && value <= '9') return value - '0';
-  if (value >= 'a' && value <= 'f') return value - 'a' + 10;
-  if (value >= 'A' && value <= 'F') return value - 'A' + 10;
-  return -1;
-}
-
-bool decodeText(const string& encoded, string& text) {
-  if (encoded.size() % 2 || encoded.size() > 20000) return false;
-  for (size_t i = 0; i < encoded.size(); i += 2) {
-    int high = hexDigit(encoded[i]), low = hexDigit(encoded[i + 1]);
-    if (high < 0 || low < 0) return false;
-    char current = static_cast<char>(16 * high + low);
-    if (!(current >= '0' && current <= '9') && !(current >= 'A' && current <= 'F')
-        && current != '\n' && current != '\r') return false;
-    text += current;
-  }
-  return true;
 }
 }
 

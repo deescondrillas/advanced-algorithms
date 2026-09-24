@@ -1,6 +1,6 @@
 "use strict";
 
-const $ = (id) => document.getElementById(id);
+// Vista de Manacher. El control de la sesión vive en session.js.
 const SVG = "http://www.w3.org/2000/svg";
 const colors = {
   text: "#181818", muted: "#707070", amber: "#303030", mint: "#707070",
@@ -9,18 +9,7 @@ const colors = {
 let state = null;
 let currentText = "";
 let sourceName = "";
-let busy = false;
-let reading = false;
-let playing = false;
-let dirty = false;
-let timer = null;
 let previousI = -2;
-
-function visibleChar(character) {
-  if (character === "\n") return "↵";
-  if (character === "\r") return "␍";
-  return character;
-}
 
 function svgElement(name, attributes, text) {
   const node = document.createElementNS(SVG, name);
@@ -28,48 +17,6 @@ function svgElement(name, attributes, text) {
   if (text !== undefined) node.textContent = text;
   return node;
 }
-
-function updateControls() {
-  $("playButton").textContent = playing ? "Pausar" : "Reproducir";
-  $("playButton").disabled = !state || dirty || reading || state.finished || (busy && !playing);
-  $("nextButton").disabled = busy || reading || playing || dirty || !state || state.finished;
-  $("resetButton").disabled = busy || reading || !state;
-  $("loadButton").disabled = busy || reading;
-  $("fileButton").disabled = busy || reading;
-  $("fileInput").disabled = busy || reading;
-  $("textInput").disabled = busy || reading;
-}
-
-function pause() {
-  playing = false;
-  clearTimeout(timer);
-  updateControls();
-}
-
-function showError(error) {
-  pause();
-  $("error").textContent = error.message || String(error);
-  $("error").hidden = false;
-}
-
-async function request(path, body) {
-  const response = await fetch(path, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-    signal: AbortSignal.timeout(10000)
-  });
-  const data = await response.json();
-  if (!response.ok || data.error) throw new Error(data.error || "Error de conexión.");
-  return data;
-}
-
-// Solo esta capa conoce HTTP. Puede sustituirse por un transporte WebSocket.
-const transport = {
-  reset: (text) => request("/api/reset", { text }),
-  next: () => request("/api/step", {})
-};
-window.manacherTransport = transport;
 
 // Recibe datos de C++; no calcula radios ni ejecuta Manacher en JavaScript.
 // text se envía al cargar; los mensajes siguientes pueden omitirlo.
@@ -84,62 +31,18 @@ function updateState(data) {
     currentText = text;
     $("textInput").value = text;
     previousI = -2;
-    dirty = false;
+    session.dirty = false;
   }
-  if (data.source !== undefined) sourceName = String(data.source);
-  state = Object.assign({
+  const merged = Object.assign({
     i: -1, center: 0, right: 0, mirror: -1, matches: 0,
     compareLeft: -1, compareRight: -1, comparison: -1,
     phase: "ready", step: 0, comparisons: 0, finished: false,
     start: 0, end: 0, length: 0, offset: 0
   }, data.text !== undefined ? {} : state, data, { text, radius });
-  state.size = data.size !== undefined ? data.size : text.length * 2 + 1;
-  $("sourceName").textContent = sourceName;
-  render();
-  if (state.finished) pause();
+  merged.size = data.size !== undefined ? data.size : text.length * 2 + 1;
+  session.publish(merged);
 }
 window.updateState = updateState;
-
-async function loadText(text, name) {
-  if (busy || reading) return;
-  pause();
-  if (text.length > 10000 || !/^[0-9A-F\r\n]*$/.test(text)) {
-    dirty = true;
-    showError(new Error("Entrada inválida: máximo 10,000 caracteres; 0–9, A–F, CR y LF."));
-    return;
-  }
-  busy = true;
-  $("error").hidden = true;
-  updateControls();
-  try {
-    const data = await transport.reset(text);
-    // La cadena confirmada por C++ llega en data.text.
-    updateState(Object.assign({}, data, { source: name }));
-    dirty = false;
-  } catch (error) {
-    dirty = true;
-    showError(error);
-  } finally {
-    busy = false;
-    updateControls();
-  }
-}
-
-async function advance() {
-  if (busy || reading || dirty || !state || state.finished) return;
-  busy = true;
-  updateControls();
-  try {
-    updateState(await transport.next());
-  } catch (error) {
-    dirty = true;
-    showError(error);
-  } finally {
-    busy = false;
-    updateControls();
-  }
-  if (playing) timer = setTimeout(advance, 1400 - Number($("speed").value) * 125);
-}
 
 function drawGraph() {
   const graph = $("graph");
@@ -222,12 +125,14 @@ function drawGraph() {
 }
 
 
-function render() {
+function render(current) {
+  state = current;
   drawGraph();
   for (const [id, key] of [
     ["varI", "i"], ["varCenter", "center"], ["varRight", "right"],
     ["varMirror", "mirror"], ["varMatches", "matches"]
   ]) $(id).textContent = state[key] < 0 ? "—" : state[key];
+  $("sourceName").textContent = sourceName;
   $("comparisons").textContent = state.comparisons;
   $("stepNumber").textContent = state.step;
   const phases = {
@@ -241,49 +146,30 @@ function render() {
   $("bestEnd").textContent = state.length || state.finished ? state.end : "—";
   const best = state.length ? currentText.slice(state.start - 1, state.end) : "";
   $("bestText").textContent = best ? Array.from(best, visibleChar).join("") : "—";
-  updateControls();
 }
 
-$("nextButton").addEventListener("click", advance);
-$("playButton").addEventListener("click", () => {
-  if (playing) return pause();
-  if (busy || reading || dirty || !state || state.finished) return;
-  playing = true;
-  advance();
+const session = createSession({
+  mode: "manacher",
+  inputs: () => [$("loadButton"), $("fileButton"), $("fileInput"), $("textInput")],
+  fields: (original) => {
+    const text = original ? currentText : $("textInput").value;
+    if (invalidText(text)) {
+      session.showError(new Error("Entrada inválida: máximo 10,000 caracteres; 0–9, A–F, CR y LF."));
+      return null;
+    }
+    return { text };
+  },
+  updateState,
+  render
 });
-$("resetButton").addEventListener("click", () => loadText(currentText, sourceName));
-$("loadButton").addEventListener("click", () => loadText($("textInput").value, ""));
-$("speed").addEventListener("input", () => { $("speedValue").textContent = $("speed").value; });
-$("textInput").addEventListener("input", () => {
-  dirty = true;
-  pause();
-});
-$("fileButton").addEventListener("click", () => $("fileInput").click());
 
-$("fileInput").addEventListener("change", () => {
-  const file = $("fileInput").files[0];
-  if (!file) return;
-  pause();
-  if (file.size > 30000) {
-    showError(new Error("Archivo demasiado grande."));
-    $("fileInput").value = "";
-    return;
-  }
-  reading = true;
-  updateControls();
-  const reader = new FileReader();
-  reader.onload = () => {
-    reading = false;
-    loadText(String(reader.result), file.name);
-    $("fileInput").value = "";
-  };
-  reader.onerror = () => {
-    reading = false;
-    showError(new Error("No se pudo leer el archivo."));
-    $("fileInput").value = "";
-  };
-  reader.readAsText(file, "UTF-8");
-});
+session.watchInput($("textInput"));
+$("textInput").addEventListener("input", () => { sourceName = ""; });
+$("fileButton").addEventListener("click", () => $("fileInput").click());
+$("fileInput").addEventListener("change", () => session.readFile($("fileInput"), (text, name) => {
+  $("textInput").value = text;
+  sourceName = name;
+  session.load(false);
+}));
 
 // Inicio vacío: no se carga ninguna transmisión ni se avanza el backend.
-updateControls();

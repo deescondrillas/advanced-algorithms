@@ -7,9 +7,10 @@
 #include <fstream>
 #include <string>
 
+#include "visual/SuffixArraySession.hpp"
+#include "visual/ManacherSession.hpp"
 #include "SuffixArray.hpp"
 #include "Manacher.hpp"
-#include "visual/ManacherSession.hpp"
 
 using namespace std;
 
@@ -28,6 +29,10 @@ void part3(vector<string>&, vector<string>&);
 int main(int argc, char* argv[]) {
   if (argc > 1 && string(argv[1]) == "--manacher-session")
     return runManacherSession();
+  if (argc > 1 && string(argv[1]) == "--lcs-session")
+    return runLcsSession();
+  if (argc > 1 && string(argv[1]) == "--find-session")
+    return runFindSession();
 
   // Seleccionar test
   string PATH = "tests/test1/";

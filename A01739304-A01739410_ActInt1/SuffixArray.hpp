@@ -25,7 +25,7 @@ class SuffixArray {
   	vector<int> lcs();
   	
   private:
-  	char DELIMITER = '\0';
+  	const char DELIMITER = '\0';
   
   	string fullText = "";
   	string textA = "";

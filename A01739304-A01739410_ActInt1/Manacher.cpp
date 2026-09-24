@@ -9,15 +9,11 @@
 /// Conserva todos los caracteres recibidos
 Manacher::Manacher(const string& theFullText) {
   this->fullText = theFullText;
-
-  palindromeText.reserve(2 * fullText.size() + 1);
   palindromeText += DELIMITER;
-  for (char current : fullText) {
-    palindromeText += current;
-    palindromeText += DELIMITER;
-  }
-  radius.resize(palindromeText.size());
+  for (char &current : fullText)
+    palindromeText += current + DELIMITER;
 
+  radius.resize(palindromeText.size());
   buildPalindromeArray();
 }
 
@@ -26,9 +22,8 @@ Manacher::Manacher(const string& theFullText) {
 void Manacher::buildPalindromeArray() {
   int center = 0;
   int right = 0;
-  int textSize = static_cast<int>(palindromeText.size());
 
-  for (int i = 0; i < textSize; ++i) {
+  for (int i = 0; i < palindromeText.size(); ++i) {
     int matches = 0;
     if (i < right) {
       int mirror = center - (i - center);
@@ -38,7 +33,7 @@ void Manacher::buildPalindromeArray() {
     // Comprueba únicamente los caracteres extras de la simetría que pueden haber
     while (
       i - matches - 1 >= 0 && 
-      i + matches + 1 < textSize && 
+      i + matches + 1 < palindromeText.size() && 
       palindromeText[i - matches - 1] == palindromeText[i + matches + 1]
     ) ++matches;
 
@@ -52,7 +47,7 @@ void Manacher::buildPalindromeArray() {
   }
 }
 
-/// Recupera inicio y fin del palíndromo más largo, contando desde 1 -- O(1)
+/// Recupera inicio y fin del palíndromo más largo -- O(1)
 pair<int, int> Manacher::longestPalindrome() const {
   if (fullText.empty())
     return {0, 0};

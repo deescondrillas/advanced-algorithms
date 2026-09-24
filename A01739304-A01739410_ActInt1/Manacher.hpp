@@ -12,14 +12,14 @@ using namespace std;
 
 class Manacher {
   public:
-    /// 
+    /// Constructor para encontrar el palíndromo más largo -- O(|s|)
     Manacher(const string&);
 
-    ///
+    /// Recupera inicio y fin del palíndromo más largo -- O(1)
     pair<int, int> longestPalindrome() const;
 
   private:
-    char DELIMITER = '\0';
+    const char DELIMITER = '\0';
 
     string palindromeText = "";
     string fullText = "";
@@ -27,6 +27,6 @@ class Manacher {
     vector<int> radius = {};
     int idxBest = 0;
 
-    /// 
+    /// Crea los radios de los palíndromos usando simetría -- O(|s|)
     void buildPalindromeArray();
 };

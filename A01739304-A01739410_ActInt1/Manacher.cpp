@@ -5,13 +5,11 @@
 
 #include "Manacher.hpp"
 
-// Constructor para encontrar el palíndromo más largo -- O(|s|) tiempo y espacio
-// Conserva todos los caracteres recibidos
+/// Constructor para encontrar el palíndromo más largo -- O(|s|) tiempo y espacio
+/// Conserva todos los caracteres recibidos
 Manacher::Manacher(const string& theFullText) {
   this->fullText = theFullText;
 
-  // A B B A -> separador A separador B separador B separador A separador.
-  // Hace que los palíndromos pares e impares se procesan de igual forma.
   palindromeText.reserve(2 * fullText.size() + 1);
   palindromeText += DELIMITER;
   for (char current : fullText) {
@@ -23,8 +21,8 @@ Manacher::Manacher(const string& theFullText) {
   buildPalindromeArray();
 }
 
-// Crea los radios de los palíndromos usando simetría -- O(|s|)
-// center y right localizan el palíndromo más lejano a la derecha.
+/// Crea los radios de los palíndromos usando simetría -- O(|s|)
+/// center y right localizan el palíndromo más lejano a la derecha.
 void Manacher::buildPalindromeArray() {
   int center = 0;
   int right = 0;
@@ -34,26 +32,23 @@ void Manacher::buildPalindromeArray() {
     int matches = 0;
     if (i < right) {
       int mirror = center - (i - center);
-      // La simetría garantiza coincidencias hasta el límite.
       matches = min(radius[mirror], right - i);
     }
 
-    // Comprueba únicamente los caracteres extras de la simetría que pueden haber.
-    while (i - matches - 1 >= 0 && i + matches + 1 < textSize
-           && palindromeText[i - matches - 1] == palindromeText[i + matches + 1]) {
-      ++matches;
-    }
+    // Comprueba únicamente los caracteres extras de la simetría que pueden haber
+    while (
+      i - matches - 1 >= 0 && 
+      i + matches + 1 < textSize && 
+      palindromeText[i - matches - 1] == palindromeText[i + matches + 1]
+    ) ++matches;
+
     radius[i] = matches;
-
     if (i + matches > right) {
-      center = i;
       right = i + matches;
+      center = i;
     }
-
-    // Actualizar solo al crecer conserva el primer resultado en un empate.
-    if (matches > radius[idxBest]) {
+    if (matches > radius[idxBest])
       idxBest = i;
-    }
   }
 }
 
@@ -61,8 +56,6 @@ void Manacher::buildPalindromeArray() {
 pair<int, int> Manacher::longestPalindrome() const {
   if (fullText.empty())
     return {0, 0};
-
-  // En el texto transformado, el radio equivale a la longitud original.
   int start = (idxBest - radius[idxBest]) / 2;
   return {start, start + radius[idxBest] - 1};
 }

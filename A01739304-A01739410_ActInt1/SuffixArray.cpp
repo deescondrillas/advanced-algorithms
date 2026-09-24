@@ -4,6 +4,7 @@
  * Fecha: 2026-09-24 */
 
 #include "SuffixArray.hpp"
+#include "algorithm"
 
 
 /// Constructor para el suffix array de dos strings concatenados -- O(|s₁| + |s₂|)

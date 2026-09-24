@@ -5,29 +5,28 @@
 
 #pragma once
 
-#include <algorithm>
-#include <ostream>
 #include <string>
-#include <utility>
 #include <vector>
 
 using namespace std;
 
 class Manacher {
   public:
-
+    /// 
     Manacher(const string&);
 
+    ///
     pair<int, int> longestPalindrome() const;
 
   private:
-
     char DELIMITER = '\0';
 
-    string fullText = "";
     string palindromeText = "";
+    string fullText = "";
+
     vector<int> radius = {};
     int idxBest = 0;
 
+    /// 
     void buildPalindromeArray();
 };

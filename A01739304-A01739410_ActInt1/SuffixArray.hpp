@@ -6,7 +6,6 @@
 #pragma once
 
 #include <algorithm>
-#include <iostream>
 #include <vector>
 #include <string>
 
@@ -18,7 +17,6 @@ class SuffixArray {
   	SuffixArray(const string&);
 
     string longestPalindrome();
-    int bfind(const string&);
     int find(const string&);
   	string lcs();
   	

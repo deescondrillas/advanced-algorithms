@@ -3,7 +3,6 @@
  *   - Franco De Escondrillas | A01739410
  * Fecha: 2026-09-24 */
 
-#include "RangeQueries.hpp"
 #include "SuffixArray.hpp"
 
 
@@ -55,50 +54,6 @@ int SuffixArray::find(const string& pattern) {
 } 
 
 
-/// Determina si un patrón p se encuentra contenido en el texto s -- O(|p| + log₂|s|)
-/// Se emplea una búsqueda binaria sobre el SA con RMQ del LCP
-int SuffixArray::bfind(const string& pattern) {
-  RangeQueries segmentTree(sa, lcp);
-  int rightBound = fullText.size();
-  int greaterEqual = 0;
-  int leftBound = 0;
-  int lessEqual = 0;
-  int matches = 0;
-  int last = 0;
-  int mid = 0;
-
-  // Encontrar el sufijo menor o igual más grande
-  mid = (leftBound + rightBound) / 2;
-  last = mid;
-  iteratePattern(pattern, sa[mid], matches);
-
-  while (leftBound < rightBound) {
-    mid = (leftBound + rightBound) / 2;
-    if (mid < last) {
-      // case 1: lower LCP malo
-      if (matches > segmentTree.minQuery(mid, last).minLcp)
-        leftBound = mid + 1;
-      // case 2: equal 
-      else 
-        rightBound = mid;
-    } else {
-      if (matches > segmentTree.minQuery(last, mid).minLcp)
-        rightBound = mid - 1;
-      else 
-        leftBound()
-    }
-  }
-
-  rightBound = fullText.size();
-  leftBound = 0;
-  matches = 0;
-
-  // Encontrar el sufijo mayor o igual más pequeño
-  
-  return segmentTree.minQuery(lessEqual, greaterEqual).minIdx;
-}
-
-
 /// Encuentra el Longest Common Substring de dos strings -- O(|s₁| + |s₂|)
 /// Funciona solo si se inicializa con el constructor de dos strings
 string SuffixArray::lcs() {
@@ -133,9 +88,9 @@ bool SuffixArray::belongToDistinctStrings(const int& i, const int& j) {
 /// Itera sobre p y s mientras el siguiente caracter coincida
 void SuffixArray::iteratePattern(const string& pattern, const int& start, int& match) {
   while (
+    match < pattern.size() &&
+    match < fullText.size() - start &&
     pattern[match] == fullText[start + match]
-    && match < fullText.size() - start
-    && match <  pattern.size()
   ) match++;
 }
 
@@ -168,9 +123,9 @@ void SuffixArray::buildLcpArray() {
       int prevSuffix = sa[sortedSa[suffix] - 1];
   
       while (
+        max(suffix, prevSuffix) + matches < sa.size() &&
+        fullText[suffix + matches] != DELIMITER &&
         fullText[suffix + matches] == fullText[prevSuffix + matches]
-        && max(suffix, prevSuffix) + matches < sa.size()
-        && fullText[suffix + matches] != DELIMITER
       ) matches++;  
       
       lcp[sortedSa[suffix]] = matches;

@@ -75,8 +75,10 @@ int SuffixArray::bfind(const string& pattern) {
   while (leftBound < rightBound) {
     mid = (leftBound + rightBound) / 2;
     if (mid < last) {
+      // case 1: lower LCP malo
       if (matches > segmentTree.minQuery(mid, last).minLcp)
         leftBound = mid + 1;
+      // case 2: equal 
       else 
         rightBound = mid;
     } else {

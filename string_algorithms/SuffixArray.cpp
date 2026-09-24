@@ -81,7 +81,7 @@ vector<int> SuffixArray::lcs() {
 bool SuffixArray::belongToDistinctStrings(const int& i, const int& j) {
   if (fullText[i] == DELIMITER || fullText[j] == DELIMITER)
     return false;
-  return int(i - textA.size()) * int(j - textA.size()) < 0;
+  return (i < textA.size()) != (j < textA.size());
 }
 
 

@@ -3,7 +3,9 @@
  *   - Franco De Escondrillas | A01739410
  * Fecha: 2026-09-24 */
 
+#include "RangeQueries.hpp"
 #include "SuffixArray.hpp"
+
 
 /// Constructor para el suffix array de dos strings concatenados -- O(|s₁| + |s₂|)
 /// Útil cuando el propósito es encontrar Longest Common Substring
@@ -21,8 +23,9 @@ SuffixArray::SuffixArray(const string& textA, const string& textB) {
   buildLcpArray();
 }
 
+
 /// Constructor para el suffix array de un solo string -- O(|s|)
-/// Útil para encontrar Longest Palindrome y Pattern Matching
+/// Útil para encontrar buscar matches de un patrón
 SuffixArray::SuffixArray(const string& theFullText) {
   this->fullText = theFullText + DELIMITER;
   this->sortedSa.resize(fullText.size());
@@ -35,19 +38,77 @@ SuffixArray::SuffixArray(const string& theFullText) {
   buildLcpArray();
 }
 
+
+/// Determina si un patrón p se encuentra contenido en el texto s -- O(|p| + |s|)
+/// Se emplea una búsqueda secuencial, similar a KMP
+int SuffixArray::find(const string& pattern) {
+  int firstMatchIdx = -1;
+  int matches = 0;
+  for (int& start : sa) {
+    if (lcp[sortedSa[start]] < matches)
+      return firstMatchIdx;
+    iteratePattern(pattern, start, matches);
+    if (matches == pattern.size())
+      firstMatchIdx = firstMatchIdx == -1 ? start : min(firstMatchIdx, start);
+  }
+  return firstMatchIdx;
+} 
+
+
+/// Determina si un patrón p se encuentra contenido en el texto s -- O(|p| + log₂|s|)
+/// Se emplea una búsqueda binaria sobre el SA con RMQ del LCP
+int SuffixArray::bfind(const string& pattern) {
+  RangeQueries segmentTree(sa, lcp);
+  int rightBound = fullText.size();
+  int greaterEqual = 0;
+  int leftBound = 0;
+  int lessEqual = 0;
+  int matches = 0;
+  int last = 0;
+  int mid = 0;
+
+  // Encontrar el sufijo menor o igual más grande
+  mid = (leftBound + rightBound) / 2;
+  last = mid;
+  iteratePattern(pattern, sa[mid], matches);
+
+  while (leftBound < rightBound) {
+    mid = (leftBound + rightBound) / 2;
+    if (mid < last) {
+      if (matches > segmentTree.minQuery(mid, last).minLcp)
+        leftBound = mid + 1;
+      else 
+        rightBound = mid;
+    } else {
+      if (matches > segmentTree.minQuery(last, mid).minLcp)
+        rightBound = mid - 1;
+      else 
+        leftBound()
+    }
+  }
+
+  rightBound = fullText.size();
+  leftBound = 0;
+  matches = 0;
+
+  // Encontrar el sufijo mayor o igual más pequeño
+  
+  return segmentTree.minQuery(lessEqual, greaterEqual).minIdx;
+}
+
+
 /// Encuentra el Longest Common Substring de dos strings -- O(|s₁| + |s₂|)
 /// Funciona solo si se inicializa con el constructor de dos strings
 string SuffixArray::lcs() {
-  if (textA == "" && textB == "")
-    return "No es posible obtener el LCS con un solo string";
   int idxBest = 0;
 
   for (int i = 1; i < sa.size(); ++i) {
     int idxCurSuffix = sa[i - 1];
     int idxNextSuffix = sa[i];
-    if (belongToDistinctStrings(idxCurSuffix, idxNextSuffix))
-      if (lcp[i] > lcp[idxBest])
-        idxBest = i;
+    if (
+      belongToDistinctStrings(idxCurSuffix, idxNextSuffix)
+      && (lcp[i] > lcp[idxBest])
+    ) idxBest = i;
   }
 
   string lcsAnswer = "";
@@ -55,6 +116,27 @@ string SuffixArray::lcs() {
     lcsAnswer += fullText[sa[idxBest] + i];
   return lcsAnswer;
 }
+
+
+/// Verifica si dos sufijos pertenecen a diferentes textos -- O(1)
+/// Uno deberá ser menor y el otro mayor a textA.size()
+bool SuffixArray::belongToDistinctStrings(const int& i, const int& j) {
+  if (fullText[i] == DELIMITER || fullText[j] == DELIMITER)
+    return false;
+  return int(i - textA.size()) * int(j - textA.size()) < 0;
+}
+
+
+/// Encuentra el match más grande de p en s, desde s[start] -- O(|p|)
+/// Itera sobre p y s mientras el siguiente caracter coincida
+void SuffixArray::iteratePattern(const string& pattern, const int& start, int& match) {
+  while (
+    pattern[match] == fullText[start + match]
+    && match < fullText.size() - start
+    && match <  pattern.size()
+  ) match++;
+}
+
 
 /// Crea el Suffix Array y el Suffix Array inverso --O(|s|)
 /// SA índice -> posición · sortedSA posición -> índice
@@ -66,6 +148,7 @@ void SuffixArray::buildSuffixArray() {
     sortedSa[sa[i]] = i;
 }
 
+
 /// Change later to SA-IS
 void SuffixArray::sortSuffixArray() {
   sort(sa.begin(), sa.end(), [this](int sufixA, int sufixB) {
@@ -73,13 +156,6 @@ void SuffixArray::sortSuffixArray() {
 	});
 }
 
-/// Verifica si dos sufijos pertenecen a diferentes textos --O(1)
-/// Uno deberá ser menor y el otro mayor a textA.size()
-bool SuffixArray::belongToDistinctStrings(const int& i, const int& j) {
-  if (fullText[i] == DELIMITER || fullText[j] == DELIMITER)
-    return false;
-  return int(i - textA.size()) * int(j - textA.size()) < 0;
-}
 
 /// Crea el Longest Common Prefix Array, ignorando delimitadores -- O(|s|)
 /// Utiliza el algoritmo de Kasai para la construcción lineal
@@ -98,17 +174,4 @@ void SuffixArray::buildLcpArray() {
       lcp[sortedSa[suffix]] = matches;
       matches -= matches ? 1 : 0;
     }
-}
-
-/// 
-int SuffixArray::buildLcpLR(int left, int right) {
-  if (right < 0)
-    right = sa.size() - 1;
-  if (left + 1 <= right)
-    return lcp[right];
-
-  int mid = (left + right) / 2;
-  lcpLeft[mid] = buildLcpLR(mid, left);
-  lcpRight[mid] = buildLcpLR(mid, right);
-  return min(lcpRight[mid], lcpLeft[mid]);
 }

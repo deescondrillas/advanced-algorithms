@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include <iostream>
 #include <algorithm>
-#include <string>
+#include <iostream>
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -18,6 +18,7 @@ class SuffixArray {
   	SuffixArray(const string&);
 
     string longestPalindrome();
+    int bfind(const string&);
     int find(const string&);
   	string lcs();
   	
@@ -37,7 +38,6 @@ class SuffixArray {
 
     bool belongToDistinctStrings(const int&, const int&);
     void iteratePattern(const string&, const int&, int&);
-    int buildLcpLR(int = 0, int = -1);
     void buildSuffixArray();
     void sortSuffixArray();
   	void buildLcpArray();

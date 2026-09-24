@@ -6,6 +6,15 @@
 using namespace std;
 
 int main() {
+  string A, B;
+  cin >> A >> B;
+  SuffixArray suffix(A);
+  cout << suffix.find(B) << endl;
+  return 0;
+}
+
+/*
+int main() {
 	string textA = "";
 	string textB = "";
 
@@ -29,3 +38,4 @@ int main() {
 
 	return 0;
 }
+ */

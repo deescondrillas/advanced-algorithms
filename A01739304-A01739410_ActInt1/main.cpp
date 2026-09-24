@@ -9,6 +9,7 @@
 
 #include "SuffixArray.hpp"
 #include "Manacher.hpp"
+#include "visual/ManacherSession.hpp"
 
 using namespace std;
 
@@ -24,7 +25,10 @@ void part2(vector<string>&, vector<string>&);
 /// Busca el LCS de dos secuencias s₁ y s₂ -- O(|s₁| + |s₂|)
 void part3(vector<string>&, vector<string>&);
 
-int main() {
+int main(int argc, char* argv[]) {
+  if (argc > 1 && string(argv[1]) == "--manacher-session")
+    return runManacherSession();
+
   // Seleccionar test
   string PATH = "tests/test1/";
 

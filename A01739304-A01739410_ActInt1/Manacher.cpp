@@ -7,35 +7,80 @@
 
 /// Constructor para encontrar el palíndromo más largo -- O(|s|)
 /// Conserva todos los caracteres recibidos
-Manacher::Manacher(const string& theFullText) {
+Manacher::Manacher(const string& theFullText, const Observer& observer) {
   this->fullText = theFullText;
+  palindromeText.reserve(2 * fullText.size() + 1);
   palindromeText += DELIMITER;
-  for (char &current : fullText)
-    palindromeText += current + DELIMITER;
+  for (char &current : fullText) {
+    palindromeText += current;
+    palindromeText += DELIMITER;
+  }
 
   radius.resize(palindromeText.size());
-  buildPalindromeArray();
+  buildPalindromeArray(observer);
 }
 
 /// Crea los radios de los palíndromos usando simetría -- O(|s|)
 /// center y right localizan el palíndromo más lejano a la derecha
-void Manacher::buildPalindromeArray() {
+void Manacher::buildPalindromeArray(const Observer& observer) {
   int center = 0;
   int right = 0;
+  int textSize = static_cast<int>(palindromeText.size());
+  ManacherState state;
 
-  for (int i = 0; i < palindromeText.size(); ++i) {
+  // El observador recibe el estado real; sin él, el recorrido termina normalmente.
+  auto report = [&](const char* phase) {
+    if (!observer) return;
+    state.phase = phase;
+    state.center = center;
+    state.right = right;
+    state.length = radius[idxBest];
+    pair<int, int> result = longestPalindrome();
+    state.start = state.length ? result.first : 0;
+    state.end = state.length ? result.second : 0;
+    observer(state, radius);
+    ++state.step;
+  };
+  report("ready");
+
+  for (int i = 0; i < textSize; ++i) {
     int matches = 0;
+    state.i = i;
+    state.matches = 0;
+    state.mirror = -1;
+    state.compareLeft = state.compareRight = -1;
+    state.comparison = -1;
+    report("select");
     if (i < right) {
       int mirror = center - (i - center);
       matches = min(radius[mirror], right - i);
+      state.mirror = mirror;
+      state.reused += matches;
     }
+    state.matches = matches;
+    report("mirror");
 
     // Comprueba únicamente los caracteres extras de la simetría que pueden haber
     while (
       i - matches - 1 >= 0 && 
-      i + matches + 1 < palindromeText.size() && 
-      palindromeText[i - matches - 1] == palindromeText[i + matches + 1]
-    ) ++matches;
+      i + matches + 1 < textSize
+    ) {
+      state.compareLeft = i - matches - 1;
+      state.compareRight = i + matches + 1;
+      state.comparison = palindromeText[state.compareLeft] == palindromeText[state.compareRight];
+      ++state.comparisons;
+      report("compare");
+      if (!state.comparison) break;
+      ++matches;
+      state.matches = matches;
+      report("expand");
+    }
+    if (i - matches - 1 < 0 || i + matches + 1 >= textSize) {
+      state.compareLeft = i - matches - 1;
+      state.compareRight = i + matches + 1;
+      state.comparison = -1;
+      report("boundary");
+    }
 
     radius[i] = matches;
     if (i + matches > right) {
@@ -44,7 +89,10 @@ void Manacher::buildPalindromeArray() {
     }
     if (matches > radius[idxBest])
       idxBest = i;
+    report("commit");
   }
+  state.finished = true;
+  report("done");
 }
 
 /// Recupera inicio y fin del palíndromo más largo -- O(1)

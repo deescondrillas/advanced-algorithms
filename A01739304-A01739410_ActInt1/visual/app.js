@@ -1,0 +1,289 @@
+"use strict";
+
+const $ = (id) => document.getElementById(id);
+const SVG = "http://www.w3.org/2000/svg";
+const colors = {
+  text: "#181818", muted: "#707070", amber: "#303030", mint: "#707070",
+  blue: "#909090", green: "#555555", red: "#222222", cell: "#fafafa"
+};
+let state = null;
+let currentText = "";
+let sourceName = "";
+let busy = false;
+let reading = false;
+let playing = false;
+let dirty = false;
+let timer = null;
+let previousI = -2;
+
+function visibleChar(character) {
+  if (character === "\n") return "↵";
+  if (character === "\r") return "␍";
+  return character;
+}
+
+function svgElement(name, attributes, text) {
+  const node = document.createElementNS(SVG, name);
+  for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, value);
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function updateControls() {
+  $("playButton").textContent = playing ? "Pausar" : "Reproducir";
+  $("playButton").disabled = !state || dirty || reading || state.finished || (busy && !playing);
+  $("nextButton").disabled = busy || reading || playing || dirty || !state || state.finished;
+  $("resetButton").disabled = busy || reading || !state;
+  $("loadButton").disabled = busy || reading;
+  $("fileButton").disabled = busy || reading;
+  $("fileInput").disabled = busy || reading;
+  $("textInput").disabled = busy || reading;
+}
+
+function pause() {
+  playing = false;
+  clearTimeout(timer);
+  updateControls();
+}
+
+function showError(error) {
+  pause();
+  $("error").textContent = error.message || String(error);
+  $("error").hidden = false;
+}
+
+async function request(path, body) {
+  const response = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(10000)
+  });
+  const data = await response.json();
+  if (!response.ok || data.error) throw new Error(data.error || "Error de conexión.");
+  return data;
+}
+
+// Solo esta capa conoce HTTP. Puede sustituirse por un transporte WebSocket.
+const transport = {
+  reset: (text) => request("/api/reset", { text }),
+  next: () => request("/api/step", {})
+};
+window.manacherTransport = transport;
+
+// Recibe datos de C++; no calcula radios ni ejecuta Manacher en JavaScript.
+// text se envía al cargar; los mensajes siguientes pueden omitirlo.
+// start/end son inclusivos desde 1. i/center/right/mirror son índices desde 0.
+function updateState(data) {
+  if (!data || typeof data !== "object") throw new Error("Estado inválido.");
+  if (data.text !== undefined && typeof data.text !== "string") throw new Error("Cadena inválida.");
+  const text = data.text !== undefined ? data.text : currentText;
+  const radius = data.radius !== undefined ? data.radius : (state ? state.radius : []);
+  if (!Array.isArray(radius)) throw new Error("Arreglo de radios inválido.");
+  if (data.text !== undefined) {
+    currentText = text;
+    $("textInput").value = text;
+    previousI = -2;
+    dirty = false;
+  }
+  if (data.source !== undefined) sourceName = String(data.source);
+  state = Object.assign({
+    i: -1, center: 0, right: 0, mirror: -1, matches: 0,
+    compareLeft: -1, compareRight: -1, comparison: -1,
+    phase: "ready", step: 0, comparisons: 0, finished: false,
+    start: 0, end: 0, length: 0, offset: 0
+  }, data.text !== undefined ? {} : state, data, { text, radius });
+  state.size = data.size !== undefined ? data.size : text.length * 2 + 1;
+  $("sourceName").textContent = sourceName;
+  render();
+  if (state.finished) pause();
+}
+window.updateState = updateState;
+
+async function loadText(text, name) {
+  if (busy || reading) return;
+  pause();
+  if (text.length > 10000 || !/^[0-9A-F\r\n]*$/.test(text)) {
+    dirty = true;
+    showError(new Error("Entrada inválida: máximo 10,000 caracteres; 0–9, A–F, CR y LF."));
+    return;
+  }
+  busy = true;
+  $("error").hidden = true;
+  updateControls();
+  try {
+    const data = await transport.reset(text);
+    // La cadena confirmada por C++ llega en data.text.
+    updateState(Object.assign({}, data, { source: name }));
+    dirty = false;
+  } catch (error) {
+    dirty = true;
+    showError(error);
+  } finally {
+    busy = false;
+    updateControls();
+  }
+}
+
+async function advance() {
+  if (busy || reading || dirty || !state || state.finished) return;
+  busy = true;
+  updateControls();
+  try {
+    updateState(await transport.next());
+  } catch (error) {
+    dirty = true;
+    showError(error);
+  } finally {
+    busy = false;
+    updateControls();
+  }
+  if (playing) timer = setTimeout(advance, 1400 - Number($("speed").value) * 125);
+}
+
+function drawGraph() {
+  const graph = $("graph");
+  graph.replaceChildren();
+  graph.toggleAttribute("hidden", !state);
+  if (!state) return;
+  const count = state.radius.length;
+  const width = count * 56 + 32;
+  graph.setAttribute("width", width);
+  graph.setAttribute("height", 244);
+  graph.setAttribute("viewBox", "0 0 " + width + " 244");
+  const x = (index) => 16 + (index - state.offset) * 56;
+  const inWindow = (index) => index >= state.offset && index < state.offset + count;
+  const clampX = (index) => Math.max(20, Math.min(width - 20, x(index) + 23));
+  const add = (name, attrs, text) => graph.appendChild(svgElement(name, attrs, text));
+
+  // La banda gris corresponde al palíndromo que fija center y right.
+  if (state.right > 0) {
+    const left = Math.max(state.offset, 2 * state.center - state.right);
+    const right = Math.min(state.offset + count - 1, state.right);
+    if (left <= right) add("rect", {
+      x: x(left) - 4, y: 95, width: (right - left) * 56 + 54, height: 62,
+      rx: 0, fill: "#f3f3f3", stroke: colors.blue, "stroke-dasharray": "4 5", opacity: ".7"
+    });
+  }
+  if (state.mirror >= 0 && state.i !== state.mirror) {
+    const start = clampX(state.mirror), end = clampX(state.i);
+    const middle = (start + end) / 2;
+    add("path", {
+      d: "M " + start + " 92 Q " + middle + " -26 " + end + " 92",
+      fill: "none", stroke: colors.mint, "stroke-width": "2", opacity: ".75"
+    });
+    add("text", { x: middle, y: 22, fill: colors.mint, "text-anchor": "middle", "font-size": "11" }, "mirror");
+  }
+  if (state.matches > 0) {
+    const left = Math.max(state.offset, state.i - state.matches);
+    const right = Math.min(state.offset + count - 1, state.i + state.matches);
+    add("line", {
+      x1: x(left), x2: x(right) + 46, y1: 154, y2: 154,
+      stroke: colors.amber, "stroke-width": "3", "stroke-linecap": "round"
+    });
+  }
+
+  const comparing = state.phase === "compare" || state.phase === "expand";
+  for (let local = 0; local < count; ++local) {
+    const index = state.offset + local;
+    const character = index % 2 === 0 ? "#" : visibleChar(currentText[(index - 1) / 2]);
+    let stroke = "#d0d0d0", fill = colors.cell, letter = colors.text;
+    if (index % 2 === 0) letter = "#777777";
+    if (index === state.mirror) { stroke = colors.mint; fill = "#e4e4e4"; }
+    if (index === state.i) { stroke = colors.amber; fill = "#d2d2d2"; }
+    if (comparing && (index === state.compareLeft || index === state.compareRight)) {
+      stroke = state.comparison === 1 ? colors.green : colors.red;
+      fill = state.comparison === 1 ? "#eeeeee" : "#e3e3e3";
+    }
+    add("text", { x: x(index) + 23, y: 86, fill: colors.muted, "text-anchor": "middle", "font-size": "11" }, index);
+    add("rect", { x: x(index), y: 102, width: 46, height: 48, rx: 0, fill, stroke, "stroke-width": index === state.i ? 2 : 1.5 });
+    add("text", { x: x(index) + 23, y: 133, fill: letter, "text-anchor": "middle", "font-size": "21", "font-family": "Consolas, monospace", "font-weight": "600" }, character);
+    add("rect", { x: x(index), y: 191, width: 46, height: 32, rx: 0, fill: "#fafafa", stroke: index === state.i ? colors.amber : "#d9d9d9" });
+    add("text", { x: x(index) + 23, y: 212, fill: index === state.i ? colors.amber : colors.text, "text-anchor": "middle", "font-size": "14", "font-family": "Consolas, monospace" }, state.radius[local] === null ? "·" : state.radius[local]);
+  }
+  add("text", { x: 16, y: 179, fill: colors.muted, "font-size": "10", "letter-spacing": "1" }, "RADIOS");
+  if (state.i >= 0) {
+    const active = x(state.i) + 23;
+    add("path", { d: "M " + (active - 5) + " 65 L " + (active + 5) + " 65 L " + active + " 73 Z", fill: colors.amber });
+    add("text", { x: active, y: 58, fill: colors.amber, "font-size": "12", "text-anchor": "middle" }, "i");
+  }
+  if (state.right > 0 && inWindow(state.right)) add("text", { x: x(state.right) + 23, y: 164, fill: colors.blue, "font-size": "10", "text-anchor": "middle" }, "R");
+  if (state.right > 0 && inWindow(state.center)) add("text", { x: x(state.center) + 23, y: 164, fill: colors.blue, "font-size": "10", "text-anchor": "middle" }, state.center === state.right ? "C · R" : "C");
+
+  $("windowLabel").textContent = state.size > count
+    ? "Ventana " + state.offset + "–" + (state.offset + count - 1) + " de " + state.size
+    : state.size + (state.size === 1 ? " posición" : " posiciones");
+  graph.setAttribute("aria-label", "Texto transformado. Centro actual " + state.i + ", radio " + state.matches + ", límite derecho " + state.right);
+  if (state.i !== previousI) {
+    const viewport = $("graphScroll");
+    viewport.scrollLeft = Math.max(0, x(Math.max(0, state.i)) - viewport.clientWidth / 2 + 23);
+    previousI = state.i;
+  }
+}
+
+
+function render() {
+  drawGraph();
+  for (const [id, key] of [
+    ["varI", "i"], ["varCenter", "center"], ["varRight", "right"],
+    ["varMirror", "mirror"], ["varMatches", "matches"]
+  ]) $(id).textContent = state[key] < 0 ? "—" : state[key];
+  $("comparisons").textContent = state.comparisons;
+  $("stepNumber").textContent = state.step;
+  const phases = {
+    ready: "Cargado", select: "Centro", mirror: "Espejo", compare: "Comparación",
+    expand: "Expansión", boundary: "Borde", commit: "Actualización", done: "Finalizado"
+  };
+  $("phase").textContent = phases[state.phase] || state.phase;
+  $("bestLabel").textContent = state.finished ? "Palíndromo" : "Palíndromo parcial";
+  $("bestLength").textContent = state.length;
+  $("bestStart").textContent = state.length || state.finished ? state.start : "—";
+  $("bestEnd").textContent = state.length || state.finished ? state.end : "—";
+  const best = state.length ? currentText.slice(state.start - 1, state.end) : "";
+  $("bestText").textContent = best ? Array.from(best, visibleChar).join("") : "—";
+  updateControls();
+}
+
+$("nextButton").addEventListener("click", advance);
+$("playButton").addEventListener("click", () => {
+  if (playing) return pause();
+  if (busy || reading || dirty || !state || state.finished) return;
+  playing = true;
+  advance();
+});
+$("resetButton").addEventListener("click", () => loadText(currentText, sourceName));
+$("loadButton").addEventListener("click", () => loadText($("textInput").value, ""));
+$("speed").addEventListener("input", () => { $("speedValue").textContent = $("speed").value; });
+$("textInput").addEventListener("input", () => {
+  dirty = true;
+  pause();
+});
+$("fileButton").addEventListener("click", () => $("fileInput").click());
+
+$("fileInput").addEventListener("change", () => {
+  const file = $("fileInput").files[0];
+  if (!file) return;
+  pause();
+  if (file.size > 30000) {
+    showError(new Error("Archivo demasiado grande."));
+    $("fileInput").value = "";
+    return;
+  }
+  reading = true;
+  updateControls();
+  const reader = new FileReader();
+  reader.onload = () => {
+    reading = false;
+    loadText(String(reader.result), file.name);
+    $("fileInput").value = "";
+  };
+  reader.onerror = () => {
+    reading = false;
+    showError(new Error("No se pudo leer el archivo."));
+    $("fileInput").value = "";
+  };
+  reader.readAsText(file, "UTF-8");
+});
+
+// Inicio vacío: no se carga ninguna transmisión ni se avanza el backend.
+updateControls();

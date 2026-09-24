@@ -16,28 +16,12 @@
       <p class="subtitle">Substring común más largo · lcs</p>
       <nav><a href="/">Manacher</a><a href="/find.html">Búsqueda · find</a><a href="/lcs.html" aria-current="page">Substring común · lcs</a></nav>
     </header>
-    <section class="input-section" aria-label="Transmisiones">
-      <div class="two-columns">
-        <div>
-          <div class="input-heading">
-            <label for="inputA">Transmisión 1</label>
-            <button id="fileA" type="button">Abrir .txt</button>
-            <input type="file" id="fileInputA" accept=".txt,text/plain" hidden>
-          </div>
-          <textarea id="inputA" rows="2" maxlength="10000" spellcheck="false"></textarea>
-          <span class="source" id="sourceA"></span>
-        </div>
-        <div>
-          <div class="input-heading">
-            <label for="inputB">Transmisión 2</label>
-            <button id="fileB" type="button">Abrir .txt</button>
-            <input type="file" id="fileInputB" accept=".txt,text/plain" hidden>
-          </div>
-          <textarea id="inputB" rows="2" maxlength="10000" spellcheck="false"></textarea>
-          <span class="source" id="sourceB"></span>
-        </div>
+    <section class="source-section" aria-label="Archivos del test">
+      <div class="chooser">
+        <span class="chooser-label">Transmisiones</span>
+        <span class="chooser-fixed">transmission1.txt · transmission2.txt</span>
       </div>
-      <div class="input-actions"><span></span><button id="loadButton" type="button">Cargar textos</button></div>
+      <p class="source-note" id="testLabel">—</p>
       <p id="error" role="alert" hidden></p>
     </section>
     <section class="visual-section" aria-label="Sufijos ordenados">

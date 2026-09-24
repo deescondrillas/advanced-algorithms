@@ -15,14 +15,15 @@
       <p class="subtitle">Palíndromo más largo · Manacher</p>
       <nav><a href="/" aria-current="page">Manacher</a><a href="/find.html">Búsqueda · find</a><a href="/lcs.html">Substring común · lcs</a></nav>
     </header>
-    <section class="input-section" aria-label="Transmisión">
-      <div class="input-heading">
-        <label for="textInput">Transmisión</label>
-        <button id="fileButton" type="button">Abrir .txt</button>
-        <input type="file" id="fileInput" accept=".txt,text/plain" hidden>
+    <section class="source-section" aria-label="Archivos del test">
+      <div class="chooser">
+        <span class="chooser-label">Transmisión</span>
+        <div class="chooser-buttons" id="transmissionChoice">
+          <button type="button">transmission1.txt</button>
+          <button type="button">transmission2.txt</button>
+        </div>
       </div>
-      <textarea id="textInput" rows="2" maxlength="10000" spellcheck="false"></textarea>
-      <div class="input-actions"><span id="sourceName"></span><button id="loadButton" type="button">Cargar texto</button></div>
+      <p class="source-note" id="testLabel">—</p>
       <p id="error" role="alert" hidden></p>
     </section>
     <section class="visual-section" aria-label="Arreglo de Manacher">

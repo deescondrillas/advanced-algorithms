@@ -1,13 +1,15 @@
 #include "ManacherSession.hpp"
-#include "../Manacher.hpp"
+#include "../../Manacher.hpp"
 
 #include <iostream>
-#include "ManacherState.hpp"
+#include "../ManacherState.hpp"
 #include "SessionText.hpp"
 
 namespace {
 // Cada respuesta contiene solo una ventana de radios, no una copia del arreglo.
-void writeState(const ManacherState& state, const vector<int>& radius, const string* text = nullptr) {
+// La cadena viaja una vez al cargar; los pasos siguientes solo envían estado.
+void writeState(const ManacherState& state, const vector<int>& radius,
+                const string* text = nullptr, const string* test = nullptr) {
   int length = state.length;
   int size = static_cast<int>(radius.size());
   int offset = max(0, min(max(0, state.i) - 15, size - 31));
@@ -32,47 +34,56 @@ void writeState(const ManacherState& state, const vector<int>& radius, const str
     else cout << (i == state.i ? state.matches : radius[i]);
   }
   cout << "]";
-  // La cadena se transmite una vez al cargar; los pasos siguientes solo envían estado.
   if (text) {
     cout << ",\"text\":";
     writeJsonText(*text);
+    cout << ",\"test\":";
+    writeJsonText(*test);
   }
   cout << "}" << endl;
 }
 }
 
 namespace {
-// Interrumpir una sesión destruye el cálculo anterior antes de cargar otro texto.
-struct RestartSession { string text; };
+// Interrumpir una sesión destruye el cálculo anterior antes de animar otra transmisión.
+// parseReset ya dejó el índice elegido en indices, así que el aviso viaja vacío.
+struct RestartSession {};
 struct EndSession {};
 }
 
 // El observador publica un paso y espera NEXT antes de devolver el control
 // al mismo for/while que utiliza Manacher en una ejecución normal.
-int runManacherSession() {
-  string text, command;
+int runManacherSession(const string& test) {
+  vector<string> transmissions, mcodes;
+  if (!readTestData(test, transmissions, mcodes)) {
+    cout << "{\"error\":\"No se pudieron leer los archivos del test\"}" << endl;
+    return 1;
+  }
+
+  const vector<int> counts = {static_cast<int>(transmissions.size())};
+  vector<int> indices;
+  string command;
+
+  // La interfaz pide la primera transmisión al abrirse; no se anima nada antes.
   while (getline(cin, command)) {
-    text.clear();
-    if (command.compare(0, 6, "RESET ") == 0 && decodeText(command.substr(6), text))
+    if (parseReset(command, counts, indices))
       break;
-    cout << "{\"error\":\"Carga una transmision con RESET\"}" << endl;
+    cout << "{\"error\":\"Comando desconocido\"}" << endl;
   }
   if (!cin) return 0;
 
   for (;;) {
+    const string& text = transmissions[indices[0]];
     try {
       Manacher palindrome(text, [&](const ManacherState& state, const vector<int>& radius) {
-        writeState(state, radius, state.phase == "ready" ? &text : nullptr);
+        writeState(state, radius, state.phase == "ready" ? &text : nullptr, &test);
         while (getline(cin, command)) {
           if (command == "NEXT" && !state.finished)
             return;
           if (command == "NEXT" || command == "STATE") {
             writeState(state, radius);
-          } else if (command.compare(0, 6, "RESET ") == 0) {
-            string nextText;
-            if (decodeText(command.substr(6), nextText))
-              throw RestartSession{nextText};
-            cout << "{\"error\":\"Texto invalido\"}" << endl;
+          } else if (parseReset(command, counts, indices)) {
+            throw RestartSession{};
           } else {
             cout << "{\"error\":\"Comando desconocido\"}" << endl;
           }
@@ -80,8 +91,7 @@ int runManacherSession() {
         throw EndSession{};
       });
       return 0;
-    } catch (const RestartSession& reset) {
-      text = reset.text;
+    } catch (const RestartSession&) {
     } catch (const EndSession&) {
       return 0;
     }

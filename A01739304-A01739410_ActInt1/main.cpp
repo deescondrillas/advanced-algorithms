@@ -7,8 +7,6 @@
 #include <fstream>
 #include <string>
 
-#include "visual/SuffixArraySession.hpp"
-#include "visual/ManacherSession.hpp"
 #include "SuffixArray.hpp"
 #include "Manacher.hpp"
 
@@ -21,30 +19,23 @@ void parse(const string&, vector<string>&, vector<string>&);
 void part1(vector<string>&, vector<string>&);
 
 /// Busca el palíndromo más grande en cada secuencia s -- O(|s|)
-void part2(vector<string>&, vector<string>&);
+void part2(vector<string>&);
 
 /// Busca el LCS de dos secuencias s₁ y s₂ -- O(|s₁| + |s₂|)
-void part3(vector<string>&, vector<string>&);
+void part3(vector<string>&);
 
 int main(int argc, char* argv[]) {
-  if (argc > 1 && string(argv[1]) == "--manacher-session")
-    return runManacherSession();
-  if (argc > 1 && string(argv[1]) == "--lcs-session")
-    return runLcsSession();
-  if (argc > 1 && string(argv[1]) == "--find-session")
-    return runFindSession();
-
-  // Seleccionar test
-  string PATH = "tests/test1/";
+  // Seleccionar test: ./x [ruta]
+  string PATH = argc > 1 ? argv[1] : "tests/test1/";
 
   vector<string> transmissions, mcodes;
   parse(PATH, transmissions, mcodes);
 
   part1(transmissions, mcodes);
   cout << endl;
-  part2(transmissions, mcodes);
+  part2(transmissions);
   cout << endl;
-  part3(transmissions, mcodes);
+  part3(transmissions);
 
   return 0;
 }
@@ -81,7 +72,7 @@ void part1(vector<string>& transmissions, vector<string>& mcodes) {
   }
 }
 
-void part2(vector<string>& transmissions, vector<string>& mcodes) {
+void part2(vector<string>& transmissions) {
   cout << "=== Parte 2 ===" << endl;
   for (string& transmission : transmissions) {
     Manacher palindromeFinder(transmission);
@@ -90,7 +81,7 @@ void part2(vector<string>& transmissions, vector<string>& mcodes) {
   }
 }
 
-void part3(vector<string>& transmissions, vector<string>& mcodes) {
+void part3(vector<string>& transmissions) {
   cout << "=== Parte 3 ===" << endl;
   SuffixArray bothTransmissions(transmissions[0], transmissions[1]);
   vector<int> answer = bothTransmissions.lcs();

@@ -1,31 +1,18 @@
 #include "SuffixArraySession.hpp"
-#include "../SuffixArray.hpp"
+#include "../../SuffixArray.hpp"
 
 #include <iostream>
-#include "SuffixArrayState.hpp"
+#include "../SuffixArrayState.hpp"
 #include "SessionText.hpp"
 
 namespace {
 // Columnas del suffix array publicadas por paso; la interfaz dibuja solo esa ventana.
 const int COLUMNS = 25;
 
-// Interrumpir una sesión destruye el cálculo anterior antes de cargar otros textos.
-struct RestartSession { string textA, textB; };
+// Interrumpir una sesión destruye el cálculo anterior antes de animar otros archivos.
+// parseReset ya dejó los índices elegidos en indices, así que el aviso viaja vacío.
+struct RestartSession {};
 struct EndSession {};
-
-// RESET <hexA> <hexB>: los dos textos del lcs, o el texto y el patrón del find.
-bool parseReset(const string& command, string& textA, string& textB) {
-  if (command.compare(0, 6, "RESET ") != 0) return false;
-  size_t split = command.find(' ', 6);
-  if (split == string::npos) return false;
-  string first, second;
-  if (!decodeText(command.substr(6, split - 6), first)) return false;
-  if (!decodeText(command.substr(split + 1), second)) return false;
-  if (first.empty() || second.empty()) return false;
-  textA = first;
-  textB = second;
-  return true;
-}
 
 // La ventana sigue a la columna activa, como la de radios en la sesión de Manacher.
 int windowOffset(const int& active, const int& size) {
@@ -56,15 +43,19 @@ void writeWindow(const vector<int>& sa, const vector<int>& lcp,
 }
 
 // Los textos viajan una sola vez al cargar; los pasos siguientes solo envían estado.
-void writeTexts(const string& textA, const string& textB, const char* nameA, const char* nameB) {
+void writeTexts(const string& textA, const string& textB, const char* nameA, const char* nameB,
+                const string& test) {
   cout << ",\"" << nameA << "\":";
   writeJsonText(textA);
   cout << ",\"" << nameB << "\":";
   writeJsonText(textB);
+  cout << ",\"test\":";
+  writeJsonText(test);
 }
 
 void writeLcsState(const LcsState& state, const vector<int>& sa, const vector<int>& lcp,
-                   const string& textA, const string& textB, bool includeTexts) {
+                   const string& textA, const string& textB, const string& test,
+                   bool includeTexts) {
   int length = state.bestLength;
   cout << "{\"phase\":\"" << state.phase << "\",\"i\":" << state.i
        << ",\"lcpHere\":" << state.lcpHere << ",\"idxBest\":" << state.idxBest
@@ -79,12 +70,13 @@ void writeLcsState(const LcsState& state, const vector<int>& sa, const vector<in
        << ",\"endB\":" << (length ? state.endB + 1 : 0);
   writeWindow(sa, lcp, windowOffset(state.i, static_cast<int>(sa.size())),
               static_cast<int>(textA.size()));
-  if (includeTexts) writeTexts(textA, textB, "textA", "textB");
+  if (includeTexts) writeTexts(textA, textB, "textA", "textB", test);
   cout << "}" << endl;
 }
 
 void writeFindState(const FindState& state, const vector<int>& sa, const vector<int>& lcp,
-                    const string& text, const string& pattern, bool includeTexts) {
+                    const string& text, const string& pattern, const string& test,
+                    bool includeTexts) {
   cout << "{\"phase\":\"" << state.phase << "\",\"column\":" << state.column
        << ",\"start\":" << state.start << ",\"matches\":" << state.matches
        << ",\"lcpHere\":" << state.lcpHere
@@ -95,25 +87,23 @@ void writeFindState(const FindState& state, const vector<int>& sa, const vector<
        << ",\"finished\":" << (state.finished ? "true" : "false")
        << ",\"firstMatch\":" << state.firstMatchIdx + 1;
   writeWindow(sa, lcp, windowOffset(state.column, static_cast<int>(sa.size())), -1);
-  if (includeTexts) writeTexts(text, pattern, "text", "pattern");
+  if (includeTexts) writeTexts(text, pattern, "text", "pattern", test);
   cout << "}" << endl;
 }
 
 // Publica un paso y espera NEXT antes de devolver el control al mismo for/while
 // que utiliza SuffixArray en una ejecución normal.
 template <typename Writer>
-void awaitNext(const Writer& write, const bool& finished) {
+void awaitNext(const Writer& write, const bool& finished,
+               const vector<int>& counts, vector<int>& indices) {
   string command;
   while (getline(cin, command)) {
     if (command == "NEXT" && !finished)
       return;
     if (command == "NEXT" || command == "STATE") {
       write(false);
-    } else if (command.compare(0, 6, "RESET ") == 0) {
-      RestartSession reset;
-      if (parseReset(command, reset.textA, reset.textB))
-        throw reset;
-      cout << "{\"error\":\"Texto invalido\"}" << endl;
+    } else if (parseReset(command, counts, indices)) {
+      throw RestartSession{};
     } else {
       cout << "{\"error\":\"Comando desconocido\"}" << endl;
     }
@@ -121,62 +111,78 @@ void awaitNext(const Writer& write, const bool& finished) {
   throw EndSession{};
 }
 
-// Espera el primer RESET válido antes de construir nada.
-bool awaitFirstReset(string& textA, string& textB, const char* help) {
+// La interfaz pide los primeros archivos al abrirse; no se anima nada antes.
+bool awaitFirstReset(const vector<int>& counts, vector<int>& indices) {
   string command;
   while (getline(cin, command)) {
-    textA.clear();
-    textB.clear();
-    if (parseReset(command, textA, textB))
+    if (parseReset(command, counts, indices))
       return true;
-    cout << "{\"error\":\"" << help << "\"}" << endl;
+    cout << "{\"error\":\"Comando desconocido\"}" << endl;
   }
+  return false;
+}
+
+// Los cinco archivos del test, leídos una vez al arrancar el proceso.
+bool readTest(const string& test, vector<string>& transmissions, vector<string>& mcodes) {
+  if (readTestData(test, transmissions, mcodes)) return true;
+  cout << "{\"error\":\"No se pudieron leer los archivos del test\"}" << endl;
   return false;
 }
 }
 
-int runLcsSession() {
-  string textA, textB;
-  if (!awaitFirstReset(textA, textB, "Carga dos transmisiones con RESET")) return 0;
+// lcs siempre compara las dos transmisiones del test: RESET no lleva índices.
+int runLcsSession(const string& test) {
+  vector<string> transmissions, mcodes;
+  if (!readTest(test, transmissions, mcodes)) return 1;
 
+  const vector<int> counts;
+  vector<int> indices;
+  if (!awaitFirstReset(counts, indices)) return 0;
+
+  const string& textA = transmissions[0];
+  const string& textB = transmissions[1];
   for (;;) {
     try {
       SuffixArray bothTexts(textA, textB);
       bothTexts.lcs([&](const LcsState& state, const vector<int>& sa, const vector<int>& lcp) {
         auto write = [&](bool includeTexts) {
-          writeLcsState(state, sa, lcp, textA, textB, includeTexts);
+          writeLcsState(state, sa, lcp, textA, textB, test, includeTexts);
         };
         write(state.phase == "ready");
-        awaitNext(write, state.finished);
+        awaitNext(write, state.finished, counts, indices);
       });
       return 0;
-    } catch (const RestartSession& reset) {
-      textA = reset.textA;
-      textB = reset.textB;
+    } catch (const RestartSession&) {
     } catch (const EndSession&) {
       return 0;
     }
   }
 }
 
-int runFindSession() {
-  string text, pattern;
-  if (!awaitFirstReset(text, pattern, "Carga una transmision y un patron con RESET")) return 0;
+// RESET <transmisión> <mcode>: cualquiera de los seis pares del test.
+int runFindSession(const string& test) {
+  vector<string> transmissions, mcodes;
+  if (!readTest(test, transmissions, mcodes)) return 1;
+
+  const vector<int> counts = {static_cast<int>(transmissions.size()),
+                              static_cast<int>(mcodes.size())};
+  vector<int> indices;
+  if (!awaitFirstReset(counts, indices)) return 0;
 
   for (;;) {
+    const string& text = transmissions[indices[0]];
+    const string& pattern = mcodes[indices[1]];
     try {
       SuffixArray textSa(text);
       textSa.find(pattern, [&](const FindState& state, const vector<int>& sa, const vector<int>& lcp) {
         auto write = [&](bool includeTexts) {
-          writeFindState(state, sa, lcp, text, pattern, includeTexts);
+          writeFindState(state, sa, lcp, text, pattern, test, includeTexts);
         };
         write(state.phase == "ready");
-        awaitNext(write, state.finished);
+        awaitNext(write, state.finished, counts, indices);
       });
       return 0;
-    } catch (const RestartSession& reset) {
-      text = reset.textA;
-      pattern = reset.textB;
+    } catch (const RestartSession&) {
     } catch (const EndSession&) {
       return 0;
     }

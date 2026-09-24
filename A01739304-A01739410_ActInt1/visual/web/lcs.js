@@ -14,7 +14,8 @@ function joinTexts() {
 }
 
 // Recibe datos de C++; no ordena sufijos ni recorre la ventana en JavaScript.
-// textA y textB se envían al cargar; los mensajes siguientes pueden omitirlos.
+// textA y textB son las dos transmisiones del test: se envían al cargar y los
+// mensajes siguientes pueden omitirlas.
 function updateState(data) {
   if (!data || typeof data !== "object") throw new Error("Estado inválido.");
   if (data.textA !== undefined) {
@@ -23,10 +24,9 @@ function updateState(data) {
     textA = data.textA;
     textB = data.textB;
     joinTexts();
-    $("inputA").value = textA;
-    $("inputB").value = textB;
+    $("testLabel").textContent = data.test + " · " + textA.length + " y "
+      + textB.length + " caracteres";
     previousColumn = -2;
-    session.dirty = false;
   }
   const merged = Object.assign({
     i: -1, lcpHere: 0, idxBest: 0, distinct: false, improved: false,
@@ -84,34 +84,12 @@ function render(state) {
   $("rangeB").textContent = state.length ? state.startB + " · " + state.endB : "—";
 }
 
+// lcs siempre compara las dos transmisiones del test: el RESET no lleva índices.
 const session = createSession({
   mode: "lcs",
-  inputs: () => [$("loadButton"), $("fileA"), $("fileB"),
-                 $("fileInputA"), $("fileInputB"), $("inputA"), $("inputB")],
-  fields: (original) => {
-    const first = original ? textA : $("inputA").value;
-    const second = original ? textB : $("inputB").value;
-    if (!first || !second || invalidText(first) || invalidText(second)) {
-      session.showError(new Error(
-        "Entrada inválida: cada transmisión usa de 1 a 10,000 caracteres; 0–9, A–F, CR y LF."));
-      return null;
-    }
-    return { textA: first, textB: second };
-  },
+  fields: () => ({}),
   updateState,
   render
 });
 
-for (const [button, input, area, source] of [
-  ["fileA", "fileInputA", "inputA", "sourceA"],
-  ["fileB", "fileInputB", "inputB", "sourceB"]
-]) {
-  session.watchInput($(area));
-  $(area).addEventListener("input", () => { $(source).textContent = ""; });
-  $(button).addEventListener("click", () => $(input).click());
-  $(input).addEventListener("change", () => session.readFile($(input), (text, name) => {
-    $(area).value = text;
-    $(source).textContent = name;
-    session.load(false);
-  }));
-}
+session.load();

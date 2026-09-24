@@ -5,12 +5,12 @@ where g++ >nul 2>&1
 if errorlevel 1 goto missing
 where python >nul 2>&1
 if errorlevel 1 goto missing
-if not exist "visual\.build" mkdir "visual\.build"
+if not exist "visual\build" mkdir "visual\build"
 echo Compilando el proyecto...
-g++ -std=c++11 -O2 -static main.cpp SuffixArray.cpp SaIs.cpp Manacher.cpp visual\ManacherSession.cpp visual\SuffixArraySession.cpp visual\SessionText.cpp -o "visual\.build\algoritmos.exe"
+g++ -std=c++11 -O2 -static visual\session\SessionMain.cpp visual\session\ManacherSession.cpp visual\session\SuffixArraySession.cpp visual\session\SessionText.cpp SuffixArray.cpp SaIs.cpp Manacher.cpp -o "visual\build\algoritmos.exe"
 if errorlevel 1 goto failed
 echo Abre http://127.0.0.1:8080 en tu navegador.
-python visual\server.py --exe "visual\.build\algoritmos.exe"
+python visual\server.py --exe "visual\build\algoritmos.exe" --test tests/test1/
 if errorlevel 1 goto failed
 popd
 exit /b 0

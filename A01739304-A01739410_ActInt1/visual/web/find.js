@@ -8,7 +8,8 @@ let fullText = "";
 let previousColumn = -2;
 
 // Recibe datos de C++; no ordena sufijos ni compara caracteres en JavaScript.
-// text y pattern se envían al cargar; los mensajes siguientes pueden omitirlos.
+// text y pattern son los archivos del test que eligió la interfaz: se envían al
+// cargar y los mensajes siguientes pueden omitirlos.
 function updateState(data) {
   if (!data || typeof data !== "object") throw new Error("Estado inválido.");
   if (data.text !== undefined) {
@@ -17,10 +18,9 @@ function updateState(data) {
     text = data.text;
     pattern = data.pattern;
     fullText = text + "$";
-    $("inputText").value = text;
-    $("inputPattern").value = pattern;
+    $("testLabel").textContent = data.test + " · transmisión de " + text.length
+      + " caracteres · patrón de " + pattern.length;
     previousColumn = -2;
-    session.dirty = false;
   }
   const merged = Object.assign({
     column: -1, start: -1, matches: 0, lcpHere: 0,
@@ -83,31 +83,15 @@ function render(state) {
   $("bestStart").textContent = state.firstMatch ? state.firstMatch : "—";
 }
 
+const transmission = createChooser("transmissionChoice", () => session.load());
+const mcode = createChooser("mcodeChoice", () => session.load());
+
 const session = createSession({
   mode: "find",
-  inputs: () => [$("loadButton"), $("fileText"), $("fileInputText"),
-                 $("inputText"), $("inputPattern")],
-  fields: (original) => {
-    const haystack = original ? text : $("inputText").value;
-    const needle = original ? pattern : $("inputPattern").value;
-    if (!haystack || !needle || invalidText(haystack) || invalidText(needle)) {
-      session.showError(new Error(
-        "Entrada inválida: transmisión y patrón usan de 1 a 10,000 caracteres; 0–9, A–F, CR y LF."));
-      return null;
-    }
-    return { text: haystack, pattern: needle };
-  },
+  fields: () => ({ transmission: transmission.value(), mcode: mcode.value() }),
   updateState,
   render
 });
 
-session.watchInput($("inputText"));
-session.watchInput($("inputPattern"));
-$("inputText").addEventListener("input", () => { $("sourceText").textContent = ""; });
-$("fileText").addEventListener("click", () => $("fileInputText").click());
-$("fileInputText").addEventListener("change", () =>
-  session.readFile($("fileInputText"), (content, name) => {
-    $("inputText").value = content;
-    $("sourceText").textContent = name;
-    session.load(false);
-  }));
+// El par del test se busca desde el primer paso, sin cargarlo a mano.
+session.load();

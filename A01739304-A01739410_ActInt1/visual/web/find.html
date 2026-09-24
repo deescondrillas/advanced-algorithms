@@ -16,24 +16,23 @@
       <p class="subtitle">Búsqueda de un patrón · find</p>
       <nav><a href="/">Manacher</a><a href="/find.html" aria-current="page">Búsqueda · find</a><a href="/lcs.html">Substring común · lcs</a></nav>
     </header>
-    <section class="input-section" aria-label="Transmisión y patrón">
-      <div class="two-columns">
-        <div>
-          <div class="input-heading">
-            <label for="inputText">Transmisión</label>
-            <button id="fileText" type="button">Abrir .txt</button>
-            <input type="file" id="fileInputText" accept=".txt,text/plain" hidden>
-          </div>
-          <textarea id="inputText" rows="2" maxlength="10000" spellcheck="false"></textarea>
-          <span class="source" id="sourceText"></span>
-        </div>
-        <div>
-          <div class="input-heading"><label for="inputPattern">Patrón</label></div>
-          <textarea id="inputPattern" rows="2" maxlength="10000" spellcheck="false"></textarea>
-          <span class="source"></span>
+    <section class="source-section" aria-label="Archivos del test">
+      <div class="chooser">
+        <span class="chooser-label">Transmisión</span>
+        <div class="chooser-buttons" id="transmissionChoice">
+          <button type="button">transmission1.txt</button>
+          <button type="button">transmission2.txt</button>
         </div>
       </div>
-      <div class="input-actions"><span></span><button id="loadButton" type="button">Cargar texto y patrón</button></div>
+      <div class="chooser">
+        <span class="chooser-label">Patrón</span>
+        <div class="chooser-buttons" id="mcodeChoice">
+          <button type="button">mcode1.txt</button>
+          <button type="button">mcode2.txt</button>
+          <button type="button">mcode3.txt</button>
+        </div>
+      </div>
+      <p class="source-note" id="testLabel">—</p>
       <p id="error" role="alert" hidden></p>
     </section>
     <section class="visual-section" aria-label="Sufijos ordenados">

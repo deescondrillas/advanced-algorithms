@@ -8,7 +8,6 @@ const colors = {
 };
 let state = null;
 let currentText = "";
-let sourceName = "";
 let previousI = -2;
 
 function svgElement(name, attributes, text) {
@@ -19,7 +18,8 @@ function svgElement(name, attributes, text) {
 }
 
 // Recibe datos de C++; no calcula radios ni ejecuta Manacher en JavaScript.
-// text se envía al cargar; los mensajes siguientes pueden omitirlo.
+// text es el archivo del test que eligió la interfaz: se envía al cargar y los
+// mensajes siguientes pueden omitirlo.
 // start/end son inclusivos desde 1. i/center/right/mirror son índices desde 0.
 function updateState(data) {
   if (!data || typeof data !== "object") throw new Error("Estado inválido.");
@@ -29,9 +29,8 @@ function updateState(data) {
   if (!Array.isArray(radius)) throw new Error("Arreglo de radios inválido.");
   if (data.text !== undefined) {
     currentText = text;
-    $("textInput").value = text;
+    $("testLabel").textContent = data.test + " · " + text.length + " caracteres";
     previousI = -2;
-    session.dirty = false;
   }
   const merged = Object.assign({
     i: -1, center: 0, right: 0, mirror: -1, matches: 0,
@@ -132,7 +131,6 @@ function render(current) {
     ["varI", "i"], ["varCenter", "center"], ["varRight", "right"],
     ["varMirror", "mirror"], ["varMatches", "matches"]
   ]) $(id).textContent = state[key] < 0 ? "—" : state[key];
-  $("sourceName").textContent = sourceName;
   $("comparisons").textContent = state.comparisons;
   $("stepNumber").textContent = state.step;
   const phases = {
@@ -148,28 +146,14 @@ function render(current) {
   $("bestText").textContent = best ? Array.from(best, visibleChar).join("") : "—";
 }
 
+const transmission = createChooser("transmissionChoice", () => session.load());
+
 const session = createSession({
   mode: "manacher",
-  inputs: () => [$("loadButton"), $("fileButton"), $("fileInput"), $("textInput")],
-  fields: (original) => {
-    const text = original ? currentText : $("textInput").value;
-    if (invalidText(text)) {
-      session.showError(new Error("Entrada inválida: máximo 10,000 caracteres; 0–9, A–F, CR y LF."));
-      return null;
-    }
-    return { text };
-  },
+  fields: () => ({ transmission: transmission.value() }),
   updateState,
   render
 });
 
-session.watchInput($("textInput"));
-$("textInput").addEventListener("input", () => { sourceName = ""; });
-$("fileButton").addEventListener("click", () => $("fileInput").click());
-$("fileInput").addEventListener("change", () => session.readFile($("fileInput"), (text, name) => {
-  $("textInput").value = text;
-  sourceName = name;
-  session.load(false);
-}));
-
-// Inicio vacío: no se carga ninguna transmisión ni se avanza el backend.
+// La transmisión del test se anima desde el primer paso, sin cargarla a mano.
+session.load();

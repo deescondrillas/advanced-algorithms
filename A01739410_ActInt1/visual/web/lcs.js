@@ -10,7 +10,7 @@
 let textA = "";
 let textB = "";
 let fullText = "";
-let previousColumn = -2;
+let previousView = "";
 
 // El suffix array recorre textA + delimitador + textB + delimitador.
 // El delimitador se dibuja como $ y ocupa exactamente una posición.
@@ -31,7 +31,7 @@ function updateState(data) {
     joinTexts();
     $("testLabel").textContent = data.test + " · " + textA.length + " y "
       + textB.length + " caracteres";
-    previousColumn = -2;
+    previousView = "";
   }
   const merged = Object.assign({
     i: -1, lcpHere: 0, idxBest: 0, distinct: false, improved: false,
@@ -55,7 +55,8 @@ function render(state) {
     && (column === state.idxBest || column === state.idxBest - 1);
 
   drawGrid($("grid"), {
-    fullText, sa: state.sa, lcp: state.lcp, origin: state.origin, offset: state.offset,
+    fullText, sa: state.sa, lcp: state.lcp, origin: state.origin,
+    offset: state.offset, size: state.size,
     pattern: null,
     // El mejor par se enmarca de lado a lado, no columna por columna.
     columnClass: (column) => [
@@ -68,9 +69,11 @@ function render(state) {
     // El prefijo común de la ventana mide lcp[i] caracteres.
     cellClass: (column, depth) => inWindow(column) && depth < state.lcpHere ? "cell-shared" : ""
   });
-  if (state.i !== previousColumn) {
+  // También se recentra si la ventana se movió sola, por ejemplo al cambiar el ancho.
+  const view = state.i + ":" + state.offset;
+  if (view !== previousView) {
     centerColumn($("gridScroll"), $("grid"));
-    previousColumn = state.i;
+    previousView = view;
   }
 
   $("varI").textContent = state.i < 0 ? "—" : state.i;
@@ -96,6 +99,9 @@ function render(state) {
 const session = createSession({
   mode: "lcs",
   fields: () => ({}),
+  // El ancho lo mide la rejilla ya dibujada; size fija cuánto ocupa una columna.
+  columns: () => fittingColumns($("gridScroll"), $("grid"),
+    session.state ? session.state.size : 0),
   updateState,
   render
 });

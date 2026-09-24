@@ -44,16 +44,25 @@ function createChooser(id, onChange) {
 }
 
 // Control de ejecución común a las tres vistas. Cada vista aporta:
-//   mode: prefijo de las rutas /api/<mode>/reset y /api/<mode>/step
+//   mode: prefijo de las rutas /api/<mode>/reset, /step y /state
 //   fields(): cuerpo del RESET, con el índice de cada archivo elegido
+//   columns(): cuántas columnas caben ahora, si la vista dibuja una rejilla
 //   updateState(data): normaliza el mensaje de C++ y llama a session.publish
 //   render(state): dibuja el estado ya normalizado
 function createSession(view) {
+  // El ancho medido viaja con cada petición: C++ recorta su ventana a él.
+  let lastColumns = null;
+  const withColumns = (body) => {
+    if (!view.columns) return body;
+    lastColumns = view.columns();
+    return Object.assign({ columns: lastColumns }, body);
+  };
   const session = {
-    state: null, busy: false, playing: false, timer: null,
+    state: null, busy: false, playing: false, timer: null, resizeTimer: null,
     transport: {
-      reset: (body) => request("/api/" + view.mode + "/reset", body),
-      next: () => request("/api/" + view.mode + "/step", {})
+      reset: (body) => request("/api/" + view.mode + "/reset", withColumns(body)),
+      next: () => request("/api/" + view.mode + "/step", withColumns({})),
+      state: () => request("/api/" + view.mode + "/state", withColumns({}))
     }
   };
   window.algorithmTransport = session.transport;
@@ -87,38 +96,56 @@ function createSession(view) {
     session.updateControls();
   };
 
+  // Una sola petición en vuelo: los botones quedan inertes mientras C++ responde.
+  session.run = async (ask) => {
+    session.busy = true;
+    session.updateControls();
+    try {
+      view.updateState(await ask());
+    } catch (error) {
+      session.showError(error);
+    } finally {
+      session.busy = false;
+      session.updateControls();
+    }
+    session.refit();
+  };
+
   // Construye la sesión desde el principio con los archivos elegidos.
   session.load = async () => {
     if (session.busy) return;
     session.pause();
-    session.busy = true;
     $("error").hidden = true;
-    session.updateControls();
-    try {
-      view.updateState(await session.transport.reset(view.fields()));
-    } catch (error) {
-      session.showError(error);
-    } finally {
-      session.busy = false;
-      session.updateControls();
-    }
+    await session.run(() => session.transport.reset(view.fields()));
   };
 
   session.advance = async () => {
     if (session.busy || !session.state || session.state.finished) return;
-    session.busy = true;
-    session.updateControls();
-    try {
-      view.updateState(await session.transport.next());
-    } catch (error) {
-      session.showError(error);
-    } finally {
-      session.busy = false;
-      session.updateControls();
-    }
+    await session.run(session.transport.next);
     if (session.playing)
       session.timer = setTimeout(session.advance, 1400 - Number($("speed").value) * 125);
   };
+
+  // Vuelve a pedir el paso actual, sin avanzarlo, cuando cambia el ancho útil.
+  session.refresh = async () => {
+    if (session.busy || !session.state) return;
+    await session.run(session.transport.state);
+  };
+
+  // El ancho útil solo se conoce del todo con la rejilla ya dibujada: el tamaño
+  // del arreglo decide cuánto miden las columnas. Se vuelve a medir después de
+  // cada respuesta y de cada cambio de tamaño, y el paso se repite si cambió.
+  session.refit = () => {
+    if (!view.columns || session.busy || !session.state) return;
+    if (view.columns() !== lastColumns) session.refresh();
+  };
+
+  // Al cambiar el tamaño de la ventana caben otras columnas.
+  if (view.columns)
+    window.addEventListener("resize", () => {
+      clearTimeout(session.resizeTimer);
+      session.resizeTimer = setTimeout(session.refit, 150);
+    });
 
   $("nextButton").addEventListener("click", () => session.advance());
   $("playButton").addEventListener("click", () => {

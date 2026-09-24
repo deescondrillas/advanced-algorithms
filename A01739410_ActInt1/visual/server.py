@@ -31,27 +31,37 @@ MODES = {
     "lcs": ("--lcs-session", ()),
     "find": ("--find-session", ("transmission", "mcode")),
 }
+# Acciones de la API: step avanza, state repite el paso actual y reset lo arma aparte.
+COMMANDS = {"reset": None, "step": "NEXT", "state": "STATE"}
 
 
 class Engine:
     def __init__(self, executable, flag, test):
         self.lock = threading.Lock()
+        self.columns = None
         self.process = subprocess.Popen(
             [str(executable), flag, test],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
             text=True, encoding="ascii", bufsize=1,
         )
 
-    def request(self, command):
+    def send(self, command):
+        if self.process.poll() is not None:
+            raise RuntimeError("El proceso C++ se cerro. Reinicia el servidor.")
+        self.process.stdin.write(command + "\n")
+        self.process.stdin.flush()
+        response = self.process.stdout.readline()
+        if not response:
+            raise RuntimeError("El proceso C++ no respondio.")
+        return json.loads(response)
+
+    def request(self, command, columns=None):
+        """El ancho medido por la interfaz precede al comando, y solo si cambio."""
         with self.lock:
-            if self.process.poll() is not None:
-                raise RuntimeError("El proceso C++ se cerro. Reinicia el servidor.")
-            self.process.stdin.write(command + "\n")
-            self.process.stdin.flush()
-            response = self.process.stdout.readline()
-            if not response:
-                raise RuntimeError("El proceso C++ no respondio.")
-            return json.loads(response)
+            if columns is not None and columns != self.columns:
+                self.send("COLUMNS " + str(columns))
+                self.columns = columns
+            return self.send(command)
 
     def close(self):
         if self.process.poll() is None:
@@ -85,9 +95,17 @@ class Engines:
 
 def route(path):
     parts = path.strip("/").split("/")
-    if len(parts) == 3 and parts[0] == "api" and parts[1] in MODES and parts[2] in ("reset", "step"):
+    if len(parts) == 3 and parts[0] == "api" and parts[1] in MODES and parts[2] in COMMANDS:
         return parts[1], parts[2]
     return None, None
+
+
+def window_columns(body):
+    """Columnas que la interfaz dice que caben; fuera de rango se ignora la medida."""
+    columns = body.get("columns")
+    usable = isinstance(columns, int) and not isinstance(columns, bool)
+    return columns if usable and 1 <= columns <= 1000 else None
+
 
 
 def reset_command(mode, body):
@@ -142,8 +160,8 @@ class Handler(BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(length))
             if not isinstance(body, dict):
                 raise ValueError("Solicitud invalida.")
-            command = reset_command(mode, body) if action == "reset" else "NEXT"
-            result = self.server.engines.get(mode).request(command)
+            command = reset_command(mode, body) if action == "reset" else COMMANDS[action]
+            result = self.server.engines.get(mode).request(command, window_columns(body))
             self.send_json(200, result)
         except (ValueError, TypeError) as error:
             self.send_json(400, {"error": str(error)})
@@ -172,7 +190,6 @@ def main():
         server.engines = Engines(executable, args.test)
         print("Visualizacion: http://127.0.0.1:" + str(server.server_port), flush=True)
         print("Datos: " + args.test, flush=True)
-        print("Deja esta ventana abierta. Ctrl+C para cerrar.", flush=True)
         server.serve_forever()
     except KeyboardInterrupt:
         pass

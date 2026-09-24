@@ -10,7 +10,7 @@
 let text = "";
 let pattern = "";
 let fullText = "";
-let previousColumn = -2;
+let previousView = "";
 
 // Recibe datos de C++; no ordena sufijos ni compara caracteres en JavaScript.
 // text y pattern son los archivos del test que eligió la interfaz: se envían al
@@ -25,7 +25,7 @@ function updateState(data) {
     fullText = text + "$";
     $("testLabel").textContent = data.test + " · transmisión de " + text.length
       + " caracteres · patrón de " + pattern.length;
-    previousColumn = -2;
+    previousView = "";
   }
   const merged = Object.assign({
     column: -1, start: -1, matches: 0, lcpHere: 0,
@@ -60,15 +60,18 @@ function render(state) {
   }
 
   drawGrid($("grid"), {
-    fullText, sa: state.sa, lcp: state.lcp, origin: null, offset: state.offset,
+    fullText, sa: state.sa, lcp: state.lcp, origin: null,
+    offset: state.offset, size: state.size,
     pattern: patternColumn,
     columnClass: (column) => column === state.column ? "col-active" : "",
     // El patrón solo se compara contra el sufijo de la columna activa.
     cellClass: (column, depth) => column === state.column ? matchClass(state, depth) : ""
   });
-  if (state.column !== previousColumn) {
+  // También se recentra si la ventana se movió sola, por ejemplo al cambiar el ancho.
+  const view = state.column + ":" + state.offset;
+  if (view !== previousView) {
     centerColumn($("gridScroll"), $("grid"));
-    previousColumn = state.column;
+    previousView = view;
   }
 
   $("varColumn").textContent = state.column < 0 ? "—" : state.column;
@@ -94,6 +97,9 @@ const mcode = createChooser("mcodeChoice", () => session.load());
 const session = createSession({
   mode: "find",
   fields: () => ({ transmission: transmission.value(), mcode: mcode.value() }),
+  // El ancho lo mide la rejilla ya dibujada; size fija cuánto ocupa una columna.
+  columns: () => fittingColumns($("gridScroll"), $("grid"),
+    session.state ? session.state.size : 0),
   updateState,
   render
 });

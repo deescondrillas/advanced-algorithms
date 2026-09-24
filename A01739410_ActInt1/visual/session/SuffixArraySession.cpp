@@ -7,12 +7,28 @@
 #include "../../SuffixArray.hpp"
 
 #include <iostream>
+#include <sstream>
 #include "../SuffixArrayState.hpp"
 #include "SessionText.hpp"
 
 namespace {
 // Columnas del suffix array publicadas por paso; la interfaz dibuja solo esa ventana.
-const int COLUMNS = 25;
+// La interfaz mide cuántas caben en su ancho y las pide con COLUMNS, para que la
+// rejilla llegue al borde de la tarjeta en lugar de cortarse antes.
+const int MIN_COLUMNS = 5, MAX_COLUMNS = 200;
+int columns = 25;
+
+// COLUMNS <n>: el número llega medido por la interfaz y se acota al rango útil.
+bool parseColumns(const string& command) {
+  if (command.compare(0, 8, "COLUMNS ") != 0) return false;
+
+  istringstream rest(command.substr(8));
+  int value = 0;
+  if (rest >> value)
+    columns = max(MIN_COLUMNS, min(value, MAX_COLUMNS));
+
+  return true;
+}
 
 // Interrumpir una sesión destruye el cálculo anterior antes de animar otros archivos.
 // parseReset ya dejó los índices elegidos en indices, así que el aviso viaja vacío.
@@ -21,7 +37,7 @@ struct EndSession {};
 
 // La ventana sigue a la columna activa, como la de radios en la sesión de Manacher.
 int windowOffset(const int& active, const int& size) {
-  return max(0, min(max(0, active) - COLUMNS / 2, size - COLUMNS));
+  return max(0, min(max(0, active) - columns / 2, size - columns));
 }
 
 // Cada respuesta contiene solo una ventana del SA, no una copia de los arreglos.
@@ -29,7 +45,7 @@ int windowOffset(const int& active, const int& size) {
 void writeWindow(const vector<int>& sa, const vector<int>& lcp,
                  const int& offset, const int& textASize) {
   int size = static_cast<int>(sa.size());
-  int end = min(size, offset + COLUMNS);
+  int end = min(size, offset + columns);
   cout << ",\"size\":" << size << ",\"offset\":" << offset << ",\"sa\":[";
   for (int i = offset; i < end; ++i)
     cout << (i != offset ? "," : "") << sa[i];
@@ -105,7 +121,7 @@ void awaitNext(const Writer& write, const bool& finished,
   while (getline(cin, command)) {
     if (command == "NEXT" && !finished)
       return;
-    if (command == "NEXT" || command == "STATE") {
+    if (command == "NEXT" || command == "STATE" || parseColumns(command)) {
       write(false);
     } else if (parseReset(command, counts, indices)) {
       throw RestartSession{};
@@ -122,7 +138,11 @@ bool awaitFirstReset(const vector<int>& counts, vector<int>& indices) {
   while (getline(cin, command)) {
     if (parseReset(command, counts, indices))
       return true;
-    cout << "{\"error\":\"Comando desconocido\"}" << endl;
+    // El ancho llega antes del primer RESET; aún no hay paso que describir.
+    if (parseColumns(command))
+      cout << "{}" << endl;
+    else
+      cout << "{\"error\":\"Comando desconocido\"}" << endl;
   }
   return false;
 }

@@ -8,6 +8,48 @@
 // Una columna por entrada del suffix array; cada sufijo se escribe hacia abajo.
 const DEPTH = 12;
 
+// Medidas de respaldo, las que fija style.css: solo sirven antes del primer
+// dibujo, porque el contenido ensancha las celdas y después se miden las reales.
+const CELL_WIDTH = 25;      // table.grid td
+const LEADING_WIDTH = 106;  // th.row-label mas th.pattern-cell
+const SCROLL_PADDING = 14;  // .grid-scroll, su margen derecho
+// Ni tan pocas que se pierda el contexto ni tantas que la ventana pese de más.
+const MIN_COLUMNS = 5;
+const MAX_COLUMNS = 200;
+
+// Lo que ensancha una columna es el número más largo que puede caer en ella, el
+// índice size-1; se mide con la misma fuente que usan las filas numéricas y más
+// los bordes colapsados. Depende solo del tamaño del arreglo, no del paso.
+function columnWidth(size) {
+  const ruler = document.createElement("span");
+  ruler.style.cssText = "position:absolute; visibility:hidden; white-space:pre;"
+    + " font: 12px Consolas, monospace";
+  ruler.textContent = String(Math.max(0, size - 1));
+  document.body.appendChild(ruler);
+  const width = ruler.getBoundingClientRect().width;
+  ruler.remove();
+  return Math.max(CELL_WIDTH, Math.ceil(width) + 4);
+}
+
+// Las etiquetas de fila y la columna del patrón van pegadas a la izquierda y no
+// son columnas del suffix array, así que su ancho se descuenta.
+function leadingWidth(table) {
+  const row = table.querySelector("tr");
+  if (!row) return LEADING_WIDTH;
+  let width = 0;
+  for (const cell of row.children)
+    if (cell.tagName === "TH") width += cell.getBoundingClientRect().width;
+  return width;
+}
+
+// Columnas que caben en el ancho visible; C++ recorta su ventana a ese número,
+// así la rejilla llega al borde de la tarjeta en vez de cortarse antes.
+function fittingColumns(viewport, table, size) {
+  const free = viewport.clientWidth - SCROLL_PADDING - leadingWidth(table);
+  return Math.max(MIN_COLUMNS,
+    Math.min(MAX_COLUMNS, Math.floor(free / columnWidth(size))));
+}
+
 function textCell(tag, text, className) {
   const cell = document.createElement(tag);
   cell.textContent = text;
@@ -21,11 +63,13 @@ function suffixLimit(fullText, start) {
   return stop === -1 ? fullText.length - 1 : stop;
 }
 
-// spec = { fullText, sa, lcp, origin, offset, columnClass(column),
+// spec = { fullText, sa, lcp, origin, offset, size, columnClass(column),
 //          cellClass(column, depth), pattern: [{ character, className }] | null }
 // Los arreglos llegan recortados a la ventana que envió C++; offset es su inicio.
 function drawGrid(table, spec) {
   const body = document.createElement("tbody");
+  // Todas las columnas miden igual, tantas como pidió fittingColumns.
+  table.style.setProperty("--column-width", columnWidth(spec.size) + "px");
   const count = spec.sa.length;
   const limits = spec.sa.map((start) => suffixLimit(spec.fullText, start));
 

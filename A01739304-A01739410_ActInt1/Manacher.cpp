@@ -4,6 +4,7 @@
  * Fecha: 2026-09-24 */
 
 #include "Manacher.hpp"
+#include "visual/ManacherState.hpp"
 
 /// Constructor para encontrar el palíndromo más largo -- O(|s|)
 /// Conserva todos los caracteres recibidos

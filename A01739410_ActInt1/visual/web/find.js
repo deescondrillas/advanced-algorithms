@@ -1,7 +1,12 @@
+/* Actividad Integradora 1 Vista de find
+ *   - Octavio Hernández Loyo | A01739304
+ *   - Franco De Escondrillas | A01739410
+ * Fecha: 2026-09-24 */
+
 "use strict";
 
-// Vista de la búsqueda de un patrón. El control vive en session.js y la
-// rejilla en grid.js; aquí solo se interpreta el estado que envía C++.
+// El control vive en session.js y la rejilla en grid.js; aquí solo se
+// interpreta el estado que envía C++.
 let text = "";
 let pattern = "";
 let fullText = "";
@@ -33,7 +38,7 @@ function updateState(data) {
 window.updateState = updateState;
 
 const phases = {
-  ready: "Cargado", select: "Sufijo", prune: "Poda por LCP",
+  ready: "En pausa", select: "Sufijo", prune: "Poda por LCP",
   compare: "Comparación", match: "Coincidencia", done: "Finalizado"
 };
 

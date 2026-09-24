@@ -1,3 +1,8 @@
+/* Actividad Integradora 1 Control de sesión de la visualización
+ *   - Octavio Hernández Loyo | A01739304
+ *   - Franco De Escondrillas | A01739410
+ * Fecha: 2026-09-24 */
+
 "use strict";
 
 const $ = (id) => document.getElementById(id);
@@ -8,7 +13,7 @@ function visibleChar(character) {
   return character;
 }
 
-// Solo esta capa conoce HTTP. Puede sustituirse por un transporte WebSocket.
+// Solo esta capa conoce HTTP.
 async function request(path, body) {
   const response = await fetch(path, {
     method: "POST",
@@ -75,7 +80,6 @@ function createSession(view) {
     $("error").hidden = false;
   };
 
-  // Recibe el estado ya normalizado por la vista y lo dibuja.
   session.publish = (state) => {
     session.state = state;
     view.render(state);

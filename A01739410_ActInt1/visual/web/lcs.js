@@ -1,7 +1,12 @@
+/* Actividad Integradora 1 Vista de lcs
+ *   - Octavio Hernández Loyo | A01739304
+ *   - Franco De Escondrillas | A01739410
+ * Fecha: 2026-09-24 */
+
 "use strict";
 
-// Vista del Longest Common Substring. El control vive en session.js y la
-// rejilla en grid.js; aquí solo se interpreta el estado que envía C++.
+// El control vive en session.js y la rejilla en grid.js; aquí solo se
+// interpreta el estado que envía C++.
 let textA = "";
 let textB = "";
 let fullText = "";
@@ -39,7 +44,7 @@ function updateState(data) {
 window.updateState = updateState;
 
 const phases = {
-  ready: "Cargado", select: "Ventana", check: "Comparación",
+  ready: "En pausa", select: "Ventana", check: "Comparación",
   update: "Nuevo máximo", done: "Finalizado"
 };
 
@@ -52,10 +57,13 @@ function render(state) {
   drawGrid($("grid"), {
     fullText, sa: state.sa, lcp: state.lcp, origin: state.origin, offset: state.offset,
     pattern: null,
+    // El mejor par se enmarca de lado a lado, no columna por columna.
     columnClass: (column) => [
       inWindow(column) ? "col-window" : "",
       column === state.i ? "col-active" : "",
-      inBest(column) ? "col-best" : ""
+      inBest(column) ? "col-best" : "",
+      inBest(column) && column === state.idxBest - 1 ? "col-best-start" : "",
+      inBest(column) && column === state.idxBest ? "col-best-end" : ""
     ].join(" ").trim(),
     // El prefijo común de la ventana mide lcp[i] caracteres.
     cellClass: (column, depth) => inWindow(column) && depth < state.lcpHere ? "cell-shared" : ""

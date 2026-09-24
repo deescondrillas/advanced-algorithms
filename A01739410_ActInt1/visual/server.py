@@ -1,3 +1,8 @@
+# Actividad Integradora 1 Servidor local de la visualización
+#   - Octavio Hernández Loyo | A01739304
+#   - Franco De Escondrillas | A01739410
+# Fecha: 2026-09-24
+
 """Servidor local de archivos y puente hacia los procesos C++ de la visualización."""
 
 import argparse
@@ -79,7 +84,6 @@ class Engines:
 
 
 def route(path):
-    """/api/<modo>/reset y /api/<modo>/step; cualquier otra ruta es 404."""
     parts = path.strip("/").split("/")
     if len(parts) == 3 and parts[0] == "api" and parts[1] in MODES and parts[2] in ("reset", "step"):
         return parts[1], parts[2]

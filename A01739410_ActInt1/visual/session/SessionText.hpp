@@ -1,9 +1,12 @@
+/* Actividad Integradora 1 Utilidades compartidas de las sesiones
+ *   - Octavio Hernández Loyo | A01739304
+ *   - Franco De Escondrillas | A01739410
+ * Fecha: 2026-09-24 */
+
 #pragma once
 
 #include <string>
 #include <vector>
-
-// Utilidades compartidas por las sesiones de visualización.
 
 /// Lee las dos transmisiones y los tres códigos maliciosos del test -- O(|archivos|)
 bool readTestData(const std::string&, std::vector<std::string>&, std::vector<std::string>&);

@@ -1,3 +1,8 @@
+/* Actividad Integradora 1 Estilos de la visualización
+ *   - Octavio Hernández Loyo | A01739304
+ *   - Franco De Escondrillas | A01739410
+ * Fecha: 2026-09-24 */
+
 :root { color-scheme: light; font-family: "Segoe UI", Arial, sans-serif; color: #181818; background: #fafafa; }
 * { box-sizing: border-box; }
 body { margin: 0; font-size: 14px; line-height: 1.5; }
@@ -25,24 +30,60 @@ button:disabled { color: #929292; cursor: default; }
 #error { font-size: 13px; color: #181818; margin: 10px 0 0; }
 .visual-section { margin-top: 42px; }
 .array-heading { display: flex; justify-content: space-between; gap: 16px; color: #626262; font-size: 12px; }
-.graph-scroll { min-height: 220px; overflow-x: auto; scrollbar-color: #bcbcbc #fafafa; }
+/* Las tres vistas comparten el mismo papel elevado sobre el fondo. */
+.graph-scroll, .grid-scroll {
+  position: relative; background: #fff; border: 1px solid #e7e7e7; border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(24, 24, 24, .05), 0 10px 26px -16px rgba(24, 24, 24, .55);
+}
+.graph-scroll { min-height: 220px; margin-top: 10px; padding: 4px 0; overflow-x: auto; scrollbar-color: #bcbcbc #fff; }
 #graph { display: block; max-width: none; margin: 0 auto; }
-/* Rejilla de sufijos: una columna por entrada del suffix array */
-.grid-scroll { min-height: 220px; margin-top: 10px; overflow-x: auto; scrollbar-color: #bcbcbc #fafafa; }
+.grid-scroll { min-height: 220px; margin-top: 10px; padding: 12px 14px 12px 0; overflow-x: auto; scrollbar-color: #bcbcbc #fff; }
 table.grid { border-collapse: collapse; font-family: Consolas, monospace; }
-table.grid th { padding: 0 10px 0 0; color: #626262; font: 400 11px "Segoe UI", Arial, sans-serif; text-align: right; white-space: nowrap; }
-table.grid td { width: 24px; height: 21px; text-align: center; font-size: 14px; border: 1px solid transparent; }
-table.grid tr.numbers td { color: #626262; font-size: 12px; }
-table.grid tr.index td { color: #969696; }
-table.grid th.pattern-cell { width: 24px; padding: 0; text-align: center; font-family: Consolas, monospace; font-size: 14px; color: #181818; }
-table.grid th.pattern-title { padding: 0 2px; font-size: 10px; color: #969696; text-align: center; }
-.col-window { background: #efefef; }
-.col-active { background: #dcdcdc; }
-.col-best { outline: 1px dashed #9a9a9a; outline-offset: -1px; }
-.cell-shared { background: #c6c6c6; font-weight: 600; }
-.cell-match { background: #c6c6c6; font-weight: 600; }
-.cell-mismatch { background: #3c3c3c; color: #fafafa; }
-.cell-current { outline: 2px solid #181818; outline-offset: -2px; }
+/* Las etiquetas de fila no se van al desplazar la rejilla a lo ancho. */
+table.grid th.row-label {
+  position: sticky; left: 0; z-index: 2; width: 74px; min-width: 74px;
+  padding: 0 12px 0 14px; background: var(--cell-bg, #fff); text-align: right; white-space: nowrap;
+  font: 400 10px "Segoe UI", Arial, sans-serif; letter-spacing: .09em;
+  text-transform: uppercase; color: #a0a0a0;
+}
+table.grid td { width: 25px; height: 22px; text-align: center; border: 1px solid transparent; }
+/* Escala de lectura: el sufijo manda, los índices acompañan. */
+table.grid tr.letters td { font-size: 15px; color: var(--cell-fg, #3a3a3a); }
+table.grid tr.numbers td { height: 18px; font-size: 12px; color: var(--cell-fg, #6b6b6b); }
+table.grid tr.index td { font-size: 11px; color: var(--cell-fg, #a0a0a0); }
+/* Separadores entre los tres bloques: cabecera numérica, sufijos y origen. */
+table.grid tr.letters:first-of-type > *, table.grid tr.numbers:last-child > * { border-top-color: #e7e7e7; }
+/* Columna del patrón: viaja pegada a las etiquetas, con su propio margen. */
+table.grid th.pattern-cell, table.grid th.pattern-title {
+  position: sticky; left: 74px; z-index: 2; width: 32px; padding: 0;
+  background: var(--cell-bg, #fff); text-align: center;
+}
+table.grid th.pattern-cell { font-family: Consolas, monospace; font-size: 15px; color: var(--cell-fg, #3a3a3a); }
+table.grid th.pattern-title {
+  font: 400 9px "Segoe UI", Arial, sans-serif; letter-spacing: .04em;
+  text-transform: uppercase; color: #a0a0a0;
+}
+/* Regla que separa el patrón de los sufijos contra los que se compara. */
+table.grid th.pattern-cell, table.grid th.pattern-title { border-right: 1px solid #e4e4e4; }
+/* Tres niveles de profundidad: ventana plana, columna activa elevada, mejor marcada. */
+table.grid .col-window { background: #f1f1f1; }
+table.grid .col-active {
+  --cell-fg: #181818; background: #e0e0e0; font-weight: 600;
+  box-shadow: -6px 0 10px -7px rgba(24, 24, 24, .75), 6px 0 10px -7px rgba(24, 24, 24, .75);
+}
+/* Un solo marco discontinuo alrededor del par, igual que la banda de Manacher. */
+/* 2px: al colapsar bordes, el trazo discontinuo solo gana al vecino si es mas ancho. */
+table.grid .col-best-start { border-left: 2px dashed #8e8e8e; }
+table.grid .col-best-end { border-right: 2px dashed #8e8e8e; }
+table.grid tr:first-child .col-best { border-top: 2px dashed #8e8e8e; }
+table.grid tr:last-child .col-best { border-bottom: 2px dashed #8e8e8e; }
+table.grid .cell-shared, table.grid .cell-match {
+  --cell-bg: #c2c2c2; --cell-fg: #181818; background: #c2c2c2; font-weight: 600;
+}
+table.grid .cell-mismatch {
+  --cell-bg: #3c3c3c; --cell-fg: #fafafa; background: #3c3c3c; font-weight: 600;
+}
+table.grid .cell-current { outline: 2px solid #181818; outline-offset: -2px; }
 dl { margin: 0; }
 dt { color: #626262; font-size: 12px; }
 dd { margin: 6px 0 0; font-family: Consolas, monospace; font-size: 17px; overflow-wrap: anywhere; }

@@ -1,7 +1,0 @@
-Actividad Integradora 1 - TC2038
-23 de Septiembre de 2026
-Equipo A01739304-A01739410
-
-Franco De Escondrillas Vázquez | A01739410 : Desarrolló el Suffix Array y LCP para la búsqueda de código malicioso y la subcadena común más larga (LCS), integrando además la lectura de archivos y la lógica central en el main.cpp. Integró a la interfaz visual el resto de visualizaciones de los algoritmos.
-
-Octavio Hernández Loyo | A01739304: Implementó y probó el algoritmo de Manacher en C++, y desarrolló la interfaz visual web (HTML/CSS/JS) junto con el servidor local para mostrar la ejecución paso a paso. Supervisó la documentación y testeo los algoritmos.

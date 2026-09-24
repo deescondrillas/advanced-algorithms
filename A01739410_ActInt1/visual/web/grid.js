@@ -1,6 +1,10 @@
+/* Actividad Integradora 1 Rejilla de sufijos compartida
+ *   - Octavio Hernández Loyo | A01739304
+ *   - Franco De Escondrillas | A01739410
+ * Fecha: 2026-09-24 */
+
 "use strict";
 
-// Rejilla de sufijos compartida por las vistas de lcs y find.
 // Una columna por entrada del suffix array; cada sufijo se escribe hacia abajo.
 const DEPTH = 12;
 

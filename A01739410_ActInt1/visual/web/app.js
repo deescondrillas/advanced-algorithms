@@ -1,10 +1,15 @@
+/* Actividad Integradora 1 Vista de Manacher
+ *   - Octavio Hernández Loyo | A01739304
+ *   - Franco De Escondrillas | A01739410
+ * Fecha: 2026-09-24 */
+
 "use strict";
 
-// Vista de Manacher. El control de la sesión vive en session.js.
+// El control de la sesión vive en session.js.
 const SVG = "http://www.w3.org/2000/svg";
 const colors = {
   text: "#181818", muted: "#707070", amber: "#303030", mint: "#707070",
-  blue: "#909090", green: "#555555", red: "#222222", cell: "#fafafa"
+  blue: "#909090", green: "#555555", red: "#222222", cell: "#ffffff"
 };
 let state = null;
 let currentText = "";
@@ -53,6 +58,11 @@ function drawGraph() {
   graph.setAttribute("width", width);
   graph.setAttribute("height", 244);
   graph.setAttribute("viewBox", "0 0 " + width + " 244");
+  const defs = graph.appendChild(svgElement("defs", {}));
+  defs.appendChild(svgElement("filter", { id: "lift", x: "-50%", y: "-50%", width: "200%", height: "200%" }))
+    .appendChild(svgElement("feDropShadow", {
+      dx: 0, dy: 2, stdDeviation: 2.5, "flood-color": "#181818", "flood-opacity": ".35"
+    }));
   const x = (index) => 16 + (index - state.offset) * 56;
   const inWindow = (index) => index >= state.offset && index < state.offset + count;
   const clampX = (index) => Math.max(20, Math.min(width - 20, x(index) + 23));
@@ -98,10 +108,11 @@ function drawGraph() {
       fill = state.comparison === 1 ? "#eeeeee" : "#e3e3e3";
     }
     add("text", { x: x(index) + 23, y: 86, fill: colors.muted, "text-anchor": "middle", "font-size": "11" }, index);
-    add("rect", { x: x(index), y: 102, width: 46, height: 48, rx: 0, fill, stroke, "stroke-width": index === state.i ? 2 : 1.5 });
+    const lifted = index === state.i ? { filter: "url(#lift)" } : {};
+    add("rect", Object.assign({ x: x(index), y: 102, width: 46, height: 48, rx: 0, fill, stroke, "stroke-width": index === state.i ? 2 : 1.5 }, lifted));
     add("text", { x: x(index) + 23, y: 133, fill: letter, "text-anchor": "middle", "font-size": "21", "font-family": "Consolas, monospace", "font-weight": "600" }, character);
-    add("rect", { x: x(index), y: 191, width: 46, height: 32, rx: 0, fill: "#fafafa", stroke: index === state.i ? colors.amber : "#d9d9d9" });
-    add("text", { x: x(index) + 23, y: 212, fill: index === state.i ? colors.amber : colors.text, "text-anchor": "middle", "font-size": "14", "font-family": "Consolas, monospace" }, state.radius[local] === null ? "·" : state.radius[local]);
+    add("rect", Object.assign({ x: x(index), y: 191, width: 46, height: 32, rx: 0, fill: "#ffffff", stroke: index === state.i ? colors.amber : "#d9d9d9" }, lifted));
+    add("text", { x: x(index) + 23, y: 212, fill: index === state.i ? colors.amber : colors.text, "text-anchor": "middle", "font-size": "15", "font-family": "Consolas, monospace", "font-weight": index === state.i ? "600" : "400" }, state.radius[local] === null ? "·" : state.radius[local]);
   }
   add("text", { x: 16, y: 179, fill: colors.muted, "font-size": "10", "letter-spacing": "1" }, "RADIOS");
   if (state.i >= 0) {
@@ -134,7 +145,7 @@ function render(current) {
   $("comparisons").textContent = state.comparisons;
   $("stepNumber").textContent = state.step;
   const phases = {
-    ready: "Cargado", select: "Centro", mirror: "Espejo", compare: "Comparación",
+    ready: "En pausa", select: "Centro", mirror: "Espejo", compare: "Comparación",
     expand: "Expansión", boundary: "Borde", commit: "Actualización", done: "Finalizado"
   };
   $("phase").textContent = phases[state.phase] || state.phase;

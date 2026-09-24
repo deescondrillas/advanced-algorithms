@@ -1,3 +1,8 @@
+/* Actividad Integradora 1 Implementación de las sesiones del suffix array
+ *   - Octavio Hernández Loyo | A01739304
+ *   - Franco De Escondrillas | A01739410
+ * Fecha: 2026-09-24 */
+
 #include "SuffixArraySession.hpp"
 #include "../../SuffixArray.hpp"
 

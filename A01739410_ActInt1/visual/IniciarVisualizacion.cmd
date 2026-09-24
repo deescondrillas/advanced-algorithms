@@ -1,4 +1,8 @@
 @echo off
+REM Actividad Integradora 1 Lanzador de la visualización
+REM   - Octavio Hernández Loyo | A01739304
+REM   - Franco De Escondrillas | A01739410
+REM Fecha: 2026-09-24
 setlocal
 pushd "%~dp0.."
 where g++ >nul 2>&1

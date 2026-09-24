@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visualización algoritmo — find</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/session.js" defer></script>
+  <script src="/grid.js" defer></script>
+  <script src="/find.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Visualización algoritmo</h1>
+      <p class="subtitle">Búsqueda de un patrón · find</p>
+      <nav><a href="/">Manacher</a><a href="/find.html" aria-current="page">Búsqueda · find</a><a href="/lcs.html">Substring común · lcs</a></nav>
+    </header>
+    <section class="source-section" aria-label="Archivos del test">
+      <div class="chooser">
+        <span class="chooser-label">Transmisión</span>
+        <div class="chooser-buttons" id="transmissionChoice">
+          <button type="button">transmission1.txt</button>
+          <button type="button">transmission2.txt</button>
+        </div>
+      </div>
+      <div class="chooser">
+        <span class="chooser-label">Patrón</span>
+        <div class="chooser-buttons" id="mcodeChoice">
+          <button type="button">mcode1.txt</button>
+          <button type="button">mcode2.txt</button>
+          <button type="button">mcode3.txt</button>
+        </div>
+      </div>
+      <p class="source-note" id="testLabel">—</p>
+      <p id="error" role="alert" hidden></p>
+    </section>
+    <section class="visual-section" aria-label="Sufijos ordenados">
+      <div class="array-heading"><span>Sufijos ordenados · el suffix array y el LCP llegan ya calculados</span><span id="windowLabel"></span></div>
+      <div class="grid-scroll" id="gridScroll"><table class="grid" id="grid"></table></div>
+      <dl class="variables">
+        <div><dt>columna</dt><dd id="varColumn">—</dd></div>
+        <div><dt>sufijo start</dt><dd id="varStart">—</dd></div>
+        <div><dt>matches</dt><dd id="varMatches">—</dd></div>
+        <div><dt>lcp[columna]</dt><dd id="varLcp">—</dd></div>
+        <div><dt>largo patrón</dt><dd id="varPattern">—</dd></div>
+      </dl>
+      <div class="controls">
+        <div class="step-actions">
+          <button id="nextButton" disabled>Siguiente paso</button>
+          <button id="playButton" disabled>Reproducir</button>
+          <button id="resetButton" disabled>Reiniciar</button>
+        </div>
+        <label class="speed-control" for="speed">Velocidad <input type="range" id="speed" min="1" max="10" value="5"><output id="speedValue" for="speed">5</output></label>
+      </div>
+      <dl class="execution">
+        <div><dt>Paso</dt><dd id="stepNumber">—</dd></div>
+        <div><dt>Estado</dt><dd id="phase">—</dd></div>
+        <div><dt>Comparaciones</dt><dd id="comparisons">—</dd></div>
+      </dl>
+    </section>
+    <section class="result-section" aria-label="Resultado" aria-live="polite">
+      <dl class="result">
+        <div class="palindrome"><dt id="bestLabel">Resultado</dt><dd id="bestText">—</dd></div>
+        <div><dt>Primer índice · base 1</dt><dd id="bestStart">—</dd></div>
+      </dl>
+    </section>
+  </main>
+</body>
+</html>

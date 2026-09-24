@@ -26,7 +26,7 @@ void part3(vector<string>&, vector<string>&);
 
 int main() {
   // Seleccionar test
-  string PATH = "test1/";
+  string PATH = "tests/test1/";
 
   vector<string> transmissions, mcodes;
   parse(PATH, transmissions, mcodes);

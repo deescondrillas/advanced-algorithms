@@ -5,7 +5,7 @@
 
 #include "Manacher.hpp"
 
-/// Constructor para encontrar el palíndromo más largo -- O(|s|) tiempo y espacio
+/// Constructor para encontrar el palíndromo más largo -- O(|s|)
 /// Conserva todos los caracteres recibidos
 Manacher::Manacher(const string& theFullText) {
   this->fullText = theFullText;
@@ -18,7 +18,7 @@ Manacher::Manacher(const string& theFullText) {
 }
 
 /// Crea los radios de los palíndromos usando simetría -- O(|s|)
-/// center y right localizan el palíndromo más lejano a la derecha.
+/// center y right localizan el palíndromo más lejano a la derecha
 void Manacher::buildPalindromeArray() {
   int center = 0;
   int right = 0;

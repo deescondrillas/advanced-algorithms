@@ -95,7 +95,6 @@ function drawGrid(table, spec) {
   };
 
   addRow("índice", textCell("th", ""), "numbers index", (local, column) => textCell("td", column));
-  addRow("lcp", textCell("th", ""), "numbers", (local) => textCell("td", spec.lcp[local]));
   addRow("sa", textCell("th", "patrón", "pattern-title"), "numbers",
     (local) => textCell("td", spec.sa[local]));
   for (let depth = 0; depth < DEPTH; ++depth) {
@@ -105,6 +104,7 @@ function drawGrid(table, spec) {
       "letters",
       (local, column) => textCell("td", character(local, depth), spec.cellClass(column, depth)));
   }
+  addRow("lcp", textCell("th", ""), "numbers", (local) => textCell("td", spec.lcp[local]));
   if (spec.origin)
     addRow("origen", textCell("th", ""), "numbers",
       (local) => textCell("td", spec.origin[local] ? spec.origin[local] : "·"));

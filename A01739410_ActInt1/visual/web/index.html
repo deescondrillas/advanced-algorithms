@@ -17,7 +17,7 @@
     <header>
       <h1>Visualización algoritmo</h1>
       <p class="subtitle">Palíndromo más largo · Manacher</p>
-      <nav><a href="/" aria-current="page">Manacher</a><a href="/find.html">Búsqueda · find</a><a href="/lcs.html">Substring común · lcs</a></nav>
+      <nav><a href="/find.html">Búsqueda · find</a><a href="/" aria-current="page">Manacher</a><a href="/lcs.html">Substring común · lcs</a></nav>
     </header>
     <section class="source-section" aria-label="Archivos del test">
       <div class="chooser">
@@ -28,6 +28,14 @@
         </div>
       </div>
       <p class="source-note" id="testLabel">—</p>
+      <div class="controls">
+        <div class="step-actions">
+          <button id="nextButton" disabled>Siguiente paso</button>
+          <button id="playButton" disabled>Reproducir</button>
+          <button id="resetButton" disabled>Reiniciar</button>
+        </div>
+        <label class="speed-control" for="speed">Velocidad <input type="range" id="speed" min="1" max="10" value="5"><output id="speedValue" for="speed">5</output></label>
+      </div>
       <p id="error" role="alert" hidden></p>
     </section>
     <section class="visual-section" aria-label="Arreglo de Manacher">
@@ -40,14 +48,6 @@
         <div><dt>mirror</dt><dd id="varMirror">—</dd></div>
         <div><dt>matches</dt><dd id="varMatches">—</dd></div>
       </dl>
-      <div class="controls">
-        <div class="step-actions">
-          <button id="nextButton" disabled>Siguiente paso</button>
-          <button id="playButton" disabled>Reproducir</button>
-          <button id="resetButton" disabled>Reiniciar</button>
-        </div>
-        <label class="speed-control" for="speed">Velocidad <input type="range" id="speed" min="1" max="10" value="5"><output id="speedValue" for="speed">5</output></label>
-      </div>
       <dl class="execution">
         <div><dt>Paso</dt><dd id="stepNumber">—</dd></div>
         <div><dt>Estado</dt><dd id="phase">—</dd></div>

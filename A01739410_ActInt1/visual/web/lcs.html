@@ -18,7 +18,7 @@
     <header>
       <h1>Visualización algoritmo</h1>
       <p class="subtitle">Substring común más largo · lcs</p>
-      <nav><a href="/">Manacher</a><a href="/find.html">Búsqueda · find</a><a href="/lcs.html" aria-current="page">Substring común · lcs</a></nav>
+      <nav><a href="/find.html">Búsqueda · find</a><a href="/">Manacher</a><a href="/lcs.html" aria-current="page">Substring común · lcs</a></nav>
     </header>
     <section class="source-section" aria-label="Archivos del test">
       <div class="chooser">
@@ -26,18 +26,6 @@
         <span class="chooser-fixed">transmission1.txt · transmission2.txt</span>
       </div>
       <p class="source-note" id="testLabel">—</p>
-      <p id="error" role="alert" hidden></p>
-    </section>
-    <section class="visual-section" aria-label="Sufijos ordenados">
-      <div class="array-heading"><span>Sufijos ordenados · el suffix array y el LCP llegan ya calculados</span><span id="windowLabel"></span></div>
-      <div class="grid-scroll" id="gridScroll"><table class="grid" id="grid"></table></div>
-      <dl class="variables">
-        <div><dt>ventana i</dt><dd id="varI">—</dd></div>
-        <div><dt>lcp[i]</dt><dd id="varLcp">—</dd></div>
-        <div><dt>idxBest</dt><dd id="varBest">—</dd></div>
-        <div><dt>mejor largo</dt><dd id="varLength">—</dd></div>
-        <div><dt>textos distintos</dt><dd id="varDistinct">—</dd></div>
-      </dl>
       <div class="controls">
         <div class="step-actions">
           <button id="nextButton" disabled>Siguiente paso</button>
@@ -46,6 +34,18 @@
         </div>
         <label class="speed-control" for="speed">Velocidad <input type="range" id="speed" min="1" max="10" value="5"><output id="speedValue" for="speed">5</output></label>
       </div>
+      <p id="error" role="alert" hidden></p>
+    </section>
+    <section class="visual-section" aria-label="Sufijos ordenados">
+      <div class="array-heading"><span>Sufijos ordenados · suffix array y LCP precalculados</span><span id="windowLabel"></span></div>
+      <div class="grid-scroll" id="gridScroll"><table class="grid" id="grid"></table></div>
+      <dl class="variables">
+        <div><dt>ventana i</dt><dd id="varI">—</dd></div>
+        <div><dt>lcp[i]</dt><dd id="varLcp">—</dd></div>
+        <div><dt>idxBest</dt><dd id="varBest">—</dd></div>
+        <div><dt>mejor largo</dt><dd id="varLength">—</dd></div>
+        <div><dt>textos distintos</dt><dd id="varDistinct">—</dd></div>
+      </dl>
       <dl class="execution">
         <div><dt>Paso</dt><dd id="stepNumber">—</dd></div>
         <div><dt>Estado</dt><dd id="phase">—</dd></div>

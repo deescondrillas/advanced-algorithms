@@ -64,5 +64,5 @@ pair<int, int> Manacher::longestPalindrome() const {
 
   // En el texto transformado, el radio equivale a la longitud original.
   int start = (idxBest - radius[idxBest]) / 2;
-  return {start + 1, start + radius[idxBest]};
+  return {start, start + radius[idxBest] - 1};
 }

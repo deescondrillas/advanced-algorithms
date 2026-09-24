@@ -11,8 +11,6 @@
 SuffixArray::SuffixArray(const string& textA, const string& textB) {
   this->fullText = textA + DELIMITER + textB + DELIMITER;
   this->sortedSa.resize(fullText.size());
-  this->lcpRight.resize(fullText.size());
-  this->lcpLeft.resize(fullText.size());
   this->lcp.resize(fullText.size());
   this->sa.resize(fullText.size());
   this->textA = textA;
@@ -28,8 +26,6 @@ SuffixArray::SuffixArray(const string& textA, const string& textB) {
 SuffixArray::SuffixArray(const string& theFullText) {
   this->fullText = theFullText + DELIMITER;
   this->sortedSa.resize(fullText.size());
-  this->lcpRight.resize(fullText.size());
-  this->lcpLeft.resize(fullText.size());
   this->lcp.resize(fullText.size());
   this->sa.resize(fullText.size());
   
@@ -55,8 +51,8 @@ int SuffixArray::find(const string& pattern) {
 
 
 /// Encuentra el Longest Common Substring de dos strings -- O(|s₁| + |s₂|)
-/// Funciona solo si se inicializa con el constructor de dos strings
-string SuffixArray::lcs() {
+/// Regresa {inicio en textA, fin en textA, inicio en textB, fin en textB}
+vector<int> SuffixArray::lcs() {
   int idxBest = 0;
 
   for (int i = 1; i < sa.size(); ++i) {
@@ -68,10 +64,15 @@ string SuffixArray::lcs() {
     ) idxBest = i;
   }
 
-  string lcsAnswer = "";
-  for (int i = 0; i < lcp[idxBest]; ++i)
-    lcsAnswer += fullText[sa[idxBest] + i];
-  return lcsAnswer;
+  int idxA = min(sa[idxBest], sa[idxBest - 1]);
+  int idxB = max(sa[idxBest], sa[idxBest - 1]);
+
+  int startA = idxA;
+  int endA = startA + lcp[idxBest] - 1;
+  int startB = idxB - (textA.size() + 1);
+  int endB = startB + lcp[idxBest] - 1;
+
+  return {startA, endA, startB, endB};
 }
 
 
@@ -95,22 +96,39 @@ void SuffixArray::iteratePattern(const string& pattern, const int& start, int& m
 }
 
 
-/// Crea el Suffix Array y el Suffix Array inverso --O(|s|)
+/// Crea el Suffix Array y el Suffix Array inverso -- O(|s| log²|s|)
 /// SA índice -> posición · sortedSA posición -> índice
+/// Usa prefix doubling: ordena por pares de rangos en vez de comparar
+/// substrings completos, así cada comparación es O(1) en vez de O(|s|).
+/// Evita el caso patológico O(|s|²) de comparar strings repetitivos.
 void SuffixArray::buildSuffixArray() {
-  for (int i = 0; i < sa.size(); ++i)
+  int n = static_cast<int>(fullText.size());
+  vector<int> rank(n), tmpRank(n);
+
+  for (int i = 0; i < n; ++i) {
     sa[i] = i;
-  sortSuffixArray();
-  for (int i = 0; i < sa.size(); ++i)
-    sortedSa[sa[i]] = i;
-}
+    rank[i] = static_cast<unsigned char>(fullText[i]);
+  }
 
+  for (int k = 1; k < n; k *= 2) {
+    auto lessByRankPair = [&](int a, int b) {
+      if (rank[a] != rank[b]) return rank[a] < rank[b];
+      int nextA = (a + k < n) ? rank[a + k] : -1;
+      int nextB = (b + k < n) ? rank[b + k] : -1;
+      return nextA < nextB;
+    };
 
-/// Change later to SA-IS
-void SuffixArray::sortSuffixArray() {
-  sort(sa.begin(), sa.end(), [this](int sufixA, int sufixB) {
-		return fullText.compare(sufixA, string::npos, fullText, sufixB, string::npos) < 0;
-	});
+    sort(sa.begin(), sa.end(), lessByRankPair);
+
+    tmpRank[sa[0]] = 0;
+    for (int i = 1; i < n; ++i)
+      tmpRank[sa[i]] = tmpRank[sa[i - 1]] + (lessByRankPair(sa[i - 1], sa[i]) ? 1 : 0);
+    rank = tmpRank;
+
+    if (rank[sa[n - 1]] == n - 1) break;
+  }
+
+  sortedSa = rank;
 }
 
 

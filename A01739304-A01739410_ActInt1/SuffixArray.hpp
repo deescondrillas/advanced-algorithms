@@ -16,9 +16,8 @@ class SuffixArray {
   	SuffixArray(const string&, const string&);
   	SuffixArray(const string&);
 
-    string longestPalindrome();
     int find(const string&);
-  	string lcs();
+  	vector<int> lcs();
   	
   private:
   	char DELIMITER = '\0';
@@ -27,16 +26,12 @@ class SuffixArray {
   	string textA = "";
   	string textB = "";
   
-    vector<string> patterns = {};
     vector<int> sortedSa = {};
-    vector<int> lcpRight = {};
-    vector<int> lcpLeft = {};
     vector<int> lcp = {};
   	vector<int> sa = {};
 
     bool belongToDistinctStrings(const int&, const int&);
     void iteratePattern(const string&, const int&, int&);
     void buildSuffixArray();
-    void sortSuffixArray();
   	void buildLcpArray();
 };

@@ -33,5 +33,6 @@ class SuffixArray {
     bool belongToDistinctStrings(const int&, const int&);
     void iteratePattern(const string&, const int&, int&);
     void buildSuffixArray();
+    void sortSuffixArray();
   	void buildLcpArray();
 };

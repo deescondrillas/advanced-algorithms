@@ -91,3 +91,31 @@ string Huffman::aplicarHuffman(const vector<pair<int, int>>& datosRle, map<int, 
     delete raiz;
     return bitsComprimidos;
 }
+
+/* Función Invertir Huffman se recorre el arbol bsucando coincidencias de los caracteres binarios con algun bloque que contenga 
+   el caracter y la frecuencia que se retorna al Rle, debido a que la construcción de la tabla de los Codigos ya no es necesaria
+   el recorrido de los caracteres binarios se convierte en O(n) una complejidad temporal lineal.
+*/
+vector<pair<int, int>> Huffman::invertirHuffman(const string& codigo, const map<string, int>& tablaCodigosEntrada) {
+    vector<pair<int, int>> resultado;
+    string codigoActual;
+
+    for (char bit : codigo) {
+        if (bit != '0' && bit != '1') {
+            continue;
+        }
+
+        codigoActual += bit;
+        map<string, int>::const_iterator simbolo = tablaCodigosEntrada.find(codigoActual);
+        if (simbolo != tablaCodigosEntrada.end()) {
+            int claveSimbolo = simbolo->second;
+            int valor = claveSimbolo / 1000;
+            int frecuencia = claveSimbolo % 1000;
+
+            resultado.push_back(make_pair(valor, frecuencia));
+            codigoActual.clear();
+        }
+    }
+
+    return resultado;
+}

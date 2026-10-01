@@ -38,10 +38,10 @@ public:
     static std::string aplicarHuffman(const std::vector<std::pair<int, int>>& datosRle, std::map<int, std::string>& tablaCodigosSalida);
 
     /**
-     * Documentar
-     * @param
-     * @param
-     * @return
+     * Invierte la codificacion de Huffman (traduccion con tabla e inversion de hash) para obtener los bloques RLE.
+     * @param codigo String por direccion de memoria (codigo a decodificar).
+     * @param Mapa de referencia codigo a simbolo compuesto.
+     * @return Vector de pares (valor, frecuencia).
      */
     static std::vector<std::pair<int, int>> invertirHuffman(const std::string &codigo, const std::map<std::string, int>& tablaCodigosEntrada);
 };

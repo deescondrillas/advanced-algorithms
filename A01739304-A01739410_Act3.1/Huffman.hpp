@@ -36,4 +36,12 @@ public:
      * @return Cadena de texto formada por ceros y unos ('0', '1') que representa el flujo comprimido.
      */
     static std::string aplicarHuffman(const std::vector<std::pair<int, int>>& datosRle, std::map<int, std::string>& tablaCodigosSalida);
+
+    /**
+     * Documentar
+     * @param
+     * @param
+     * @return
+     */
+    static std::vector<std::pair<int, int>> invertirHuffman(const std::string &codigo, const std::map<std::string, int>& tablaCodigosEntrada);
 };

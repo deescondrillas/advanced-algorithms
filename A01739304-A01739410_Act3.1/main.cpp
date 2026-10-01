@@ -36,24 +36,32 @@ int main() {
 
   // Decodificar el mensaje
   string decodedText = decode(compressedText, encodingTable);
+
+  // Comparar mensajes
+  cout << "Se recuperaron " << decodedText.size() << " / " << originalText.size() << "bytes" << endl;
+  cout << "El mensaje decodificado es" << (originalText == decodedText ? "identico" : "diferente") << endl;
+
+  // Imprimir mensajes
+  cout << "Mensaje original:\n" << originalText << endl;
+  cout << "Mensaje codificado y decodificado:\n" << decodedText << endl;
   
   return 0;
 }
 
 int parse(string &originalText) {
-  ifstream archivoEntrada("Transmision.txt");
-  if (!archivoEntrada.is_open()) {
+  ifstream inputFile("Transmision.txt");
+  if (!inputFile.is_open()) {
     cerr << "Error: No se pudo abrir el archivo Transmision.txt" << endl;
     return 1;
   }
 
   stringstream buffer;
-  buffer << archivoEntrada.rdbuf();
-  string textoOriginal = buffer.str();
-  archivoEntrada.close();
+  buffer << inputFile.rdbuf();
+  originalText = buffer.str();
+  inputFile.close();
 
   cout << "--- INFORME DE PIPELINE DE COMPRESION ---" << endl;
-  cout << "Tamano original: " << textoOriginal.size() << " bytes (" << textoOriginal.size() * 8 << " bits)" << endl;
+  cout << "Tamano original: " << originalText.size() << " bytes (" << originalText.size() * 8 << " bits)" << endl;
   return 0;
 }
 
@@ -77,9 +85,21 @@ map<int, string> encode(const string &originalText, string &compressedText) {
 }
 
 string decode(const string &compressedText, const map<int, string> &encodingTable) {
+  string originalText;
   map<string, int> decodingTable;
   for (pair<int, string> kv : encodingTable)
     decodingTable[kv.second] = kv.first;
 
+  // Paso 1: Invertir Huffman Codification
   vector<pair<int, int>> rleOutput = Huffman::invertirHuffman(compressedText, decodingTable);
+  cout << "Paso 1 (Invertir Huffman): " << rleOutput.size() << " / " << "" << " bloques recuperados";
+
+  // Paso 2: Invertir Run-Length Encoding
+  vector<int> mtfOutput = Rle::invertirRle(rleOutput);
+  cout << "Paso 2 (Invertir RLE): " << mtfOutput.size() << " / " << "" << " elementos recuperados";
+
+  // Paso 3: Invertir Move-to-Front
+  string originalText = Mtf::invertirMtf(mtfOutput);
+  cout << "Paso 3 (Invertir MTF): Se recupero un mensaje de " << originalText.size() << " bytes";
+  return originalText;
 }

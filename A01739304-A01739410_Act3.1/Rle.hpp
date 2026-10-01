@@ -16,4 +16,10 @@ public:
      * @return Vector de pares donde cada par representa (valor, frecuencia).
      */
     static std::vector<std::pair<int, int>> aplicarRle(const std::vector<int>& datosMtf);
+    /**
+     * …
+     * @param …
+     * @return …
+     */
+    static std::vector<int> invertirRle(const std::vector<std::pair<int, int>> par_valor_frecuencia);
 };

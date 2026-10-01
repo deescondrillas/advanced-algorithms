@@ -19,15 +19,16 @@ using namespace std;
 /// Funcion para la lectura de telemetria -- O(1)
 int parse(string&);
 
-/// Funcion para la codificacion del mensaje -- O (max(n log₂n ))
+/// Funcion para la codificacion del mensaje -- O(max(n log₂n, n · |Σ|))
 map<int, string> encode(const string&, string&);
 
+/// Funcion para la decodificacion del mensaje -- O(n · |Σ|)
 string decode(const string&, const map<int, string>&);
 
 int main() {
   string originalText, compressedText;
 
-  // Leer el input
+  // Leer el input (abortar si el archivo no existe)
   if (parse(originalText))
     return 1;
 
@@ -35,15 +36,15 @@ int main() {
   map<int, string> encodingTable = encode(originalText, compressedText);
 
   // Decodificar el mensaje
-  string decodedText = decode(compressedText, encodingTable);
+  string decodedText = "";//decode(compressedText, encodingTable);
 
   // Comparar mensajes
   cout << "Se recuperaron " << decodedText.size() << " / " << originalText.size() << "bytes" << endl;
   cout << "El mensaje decodificado es" << (originalText == decodedText ? "identico" : "diferente") << endl;
 
   // Imprimir mensajes
-  cout << "Mensaje original:\n" << originalText << endl;
-  cout << "Mensaje codificado y decodificado:\n" << decodedText << endl;
+  cout << "\nMensaje original:\n" << originalText << endl;
+  cout << "\nMensaje decodificado:\n" << decodedText << endl;
   
   return 0;
 }
@@ -85,7 +86,6 @@ map<int, string> encode(const string &originalText, string &compressedText) {
 }
 
 string decode(const string &compressedText, const map<int, string> &encodingTable) {
-  string originalText;
   map<string, int> decodingTable;
   for (pair<int, string> kv : encodingTable)
     decodingTable[kv.second] = kv.first;

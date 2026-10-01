@@ -16,4 +16,10 @@ public:
      * @return Vector de enteros con los indices correspondientes del alfabeto dinamico.
      */
     static std::vector<int> aplicarMtf(const std::string& textoOriginal);
+    /**
+     * …
+     * @param …
+     * @return …
+     */
+    static std::string invertirMtf(const std::vector<int>& alfabeto);
 };

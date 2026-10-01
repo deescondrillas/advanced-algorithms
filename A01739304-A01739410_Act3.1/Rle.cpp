@@ -29,3 +29,7 @@ vector<pair<int, int>> Rle::aplicarRle(const vector<int>& datosMtf) {
 
     return resultadoRle;
 }
+
+std::vector<int> Rle::invertirRle(const std::vector<std::pair<int, int>> par_valor_frecuencia) {
+  return {};
+}

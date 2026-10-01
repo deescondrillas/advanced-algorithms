@@ -23,3 +23,7 @@ vector<int> Mtf::aplicarMtf(const string& textoOriginal) {
 
     return resultadoMtf;
 }
+
+string Mtf::invertirMtf(const std::vector<int>& alfabeto) {
+  return "";
+}

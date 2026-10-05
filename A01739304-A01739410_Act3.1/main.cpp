@@ -49,6 +49,7 @@ int main() {
   return 0;
 }
 
+/// Funcion para la lectura de telemetria -- O(1)
 int parse(string &originalText) {
   ifstream inputFile("Transmision.txt");
   if (!inputFile.is_open()) {
@@ -66,6 +67,7 @@ int parse(string &originalText) {
   return 0;
 }
 
+/// Funcion para la codificacion del mensaje -- O(max(n log₂n, n · |Σ|))
 map<int, string> encode(const string &originalText, string &compressedText) {
   // Paso 1: Move-to-Front
   vector<int> mtfOutput = Mtf::aplicarMtf(originalText);
@@ -85,6 +87,7 @@ map<int, string> encode(const string &originalText, string &compressedText) {
   return huffmanCodeTable;
 }
 
+/// Funcion para la decodificacion del mensaje -- O(n · |Σ|)
 string decode(const string &compressedText, const map<int, string> &encodingTable) {
   map<string, int> decodingTable;
   for (pair<int, string> kv : encodingTable)

@@ -30,6 +30,10 @@ vector<pair<int, int>> Rle::aplicarRle(const vector<int>& datosMtf) {
     return resultadoRle;
 }
 
-std::vector<int> Rle::invertirRle(const std::vector<std::pair<int, int>> par_valor_frecuencia) {
-  return {};
+vector<int> Rle::invertirRle(const vector<pair<int, int>> par_valor_frecuencia) {
+  vector<int> datosMtf;
+  for (pair<int, int> i : par_valor_frecuencia) 
+    for (int j = 0; j < i.second; ++j)
+      datosMtf.push_back(i.first);
+  return datosMtf;
 }

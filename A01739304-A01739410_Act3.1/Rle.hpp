@@ -17,9 +17,9 @@ public:
      */
     static std::vector<std::pair<int, int>> aplicarRle(const std::vector<int>& datosMtf);
     /**
-     * …
-     * @param …
-     * @return …
+     * Decodifica RLE al descompactar los pares valor - frecuencia.
+     * @param vector de pares valor - frecuencia.
+     * @return vector de indices numericos correspondiente a la codificacion MTF.
      */
     static std::vector<int> invertirRle(const std::vector<std::pair<int, int>> par_valor_frecuencia);
 };

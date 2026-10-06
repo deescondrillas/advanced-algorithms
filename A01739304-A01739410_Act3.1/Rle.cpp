@@ -1,6 +1,7 @@
 /**
  * Descripcion: Implementacion de la clase Rle para la compactacion de corridas consecutivas.
- * Autor:Sandra E Barajas Montiel
+ * Autor: Sandra E Barajas Montiel
+ * Ultima actualizacion: Franco De Escondrillas & Octavio Hernández -- 2026-10-04
  */
 
 #include "Rle.hpp"

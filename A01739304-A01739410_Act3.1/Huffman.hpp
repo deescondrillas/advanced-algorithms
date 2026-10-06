@@ -1,6 +1,7 @@
 /**
  * Descripcion: Declaracion de la clase Huffman para la construccion de arboles de codigos prefijo.
- * Autor:Sandra E Barajas Montiel
+ * Autor: Sandra E Barajas Montiel
+ * Ultima actualizacion: Franco De Escondrillas & Octavio Hernández -- 2026-10-05
  */
 
 #pragma once

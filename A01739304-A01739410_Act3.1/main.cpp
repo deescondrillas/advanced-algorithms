@@ -20,27 +20,27 @@ using namespace std;
 int parse(string&);
 
 /// Funcion para la codificacion del mensaje -- O(max(n log₂n, n · |Σ|))
-map<int, string> encode(const string&, string&);
+map<int, string> encode(const string&, string&, string&);
 
 /// Funcion para la decodificacion del mensaje -- O(n · |Σ|)
-string decode(const string&, const map<int, string>&);
+string decode(const string&, const map<int, string>&, string&);
 
 int main() {
-  string originalText, compressedText;
+  string originalText, alphabet, compressedText;
 
   // Leer el input (abortar si el archivo no existe)
   if (parse(originalText))
     return 1;
 
   // Codificar el mensaje
-  map<int, string> encodingTable = encode(originalText, compressedText);
+  map<int, string> encodingTable = encode(originalText, compressedText, alphabet);
 
   // Decodificar el mensaje
-  string decodedText = "";//decode(compressedText, encodingTable);
+  string decodedText = decode(compressedText, encodingTable, alphabet);
 
   // Comparar mensajes
   cout << "Se recuperaron " << decodedText.size() << " / " << originalText.size() << "bytes" << endl;
-  cout << "El mensaje decodificado es" << (originalText == decodedText ? "identico" : "diferente") << endl;
+  cout << "El mensaje decodificado es " << (originalText == decodedText ? "identico" : "diferente") << endl;
 
   // Imprimir mensajes
   cout << "\nMensaje original:\n" << originalText << endl;
@@ -68,9 +68,9 @@ int parse(string &originalText) {
 }
 
 /// Funcion para la codificacion del mensaje -- O(max(n log₂n, n · |Σ|))
-map<int, string> encode(const string &originalText, string &compressedText) {
+map<int, string> encode(const string &originalText, string &compressedText, string &alphabet) {
   // Paso 1: Move-to-Front
-  vector<int> mtfOutput = Mtf::aplicarMtf(originalText);
+  vector<int> mtfOutput = Mtf::aplicarMtf(originalText, alphabet);
   cout << "Paso 1 (MTF Aplicado): " << mtfOutput.size() << " elementos generados." << endl;
 
   // Paso 2: Run-Length Encoding
@@ -88,21 +88,22 @@ map<int, string> encode(const string &originalText, string &compressedText) {
 }
 
 /// Funcion para la decodificacion del mensaje -- O(n · |Σ|)
-string decode(const string &compressedText, const map<int, string> &encodingTable) {
+string decode(const string &compressedText, const map<int, string> &encodingTable, string &alphabet) {
+  cout << "\n--- INFORME DE PIPELINE DE DESCOMPRESION ---" << endl;
   map<string, int> decodingTable;
   for (pair<int, string> kv : encodingTable)
     decodingTable[kv.second] = kv.first;
 
   // Paso 1: Invertir Huffman Codification
   vector<pair<int, int>> rleOutput = Huffman::invertirHuffman(compressedText, decodingTable);
-  cout << "Paso 1 (Invertir Huffman): " << rleOutput.size() << " / " << "" << " bloques recuperados";
+  cout << "Paso 1 (Invertir Huffman): " << rleOutput.size() << " / " << "" << " bloques recuperados" << endl;
 
   // Paso 2: Invertir Run-Length Encoding
   vector<int> mtfOutput = Rle::invertirRle(rleOutput);
-  cout << "Paso 2 (Invertir RLE): " << mtfOutput.size() << " / " << "" << " elementos recuperados";
+  cout << "Paso 2 (Invertir RLE): " << mtfOutput.size() << " / " << "" << " elementos recuperados" << endl;
 
   // Paso 3: Invertir Move-to-Front
-  string originalText = Mtf::invertirMtf(mtfOutput);
-  cout << "Paso 3 (Invertir MTF): Se recupero un mensaje de " << originalText.size() << " bytes";
+  string originalText = Mtf::invertirMtf(mtfOutput, alphabet);
+  cout << "Paso 3 (Invertir MTF): Se recupero un mensaje de " << originalText.size() << " bytes" << endl;
   return originalText;
 }

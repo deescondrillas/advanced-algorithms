@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
 
 class Mtf {
 public:

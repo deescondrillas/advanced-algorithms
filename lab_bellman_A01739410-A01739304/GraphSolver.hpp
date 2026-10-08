@@ -1,23 +1,14 @@
 /**
  * Descripción: Declaración de la clase GraphSolver para el algoritmo de Bellman-Ford defectuoso.
  * Autor: Sandra E. Barajas Montiel
+ * Última modificación: Octavio & Franco | 2026-10-08
  */
 
 #pragma once
-
 #include <vector>
 
 class GraphSolver {
-private:
-    int numeroVertices;
-    struct Edge {
-        int origen;
-        int destino;
-        int peso;
-    };
-    std::vector<Edge> listaAristas;
-
-public:
+  public:
     /**
      * Constructor para inicializar el solucionador con el número de vértices.
      * @param v Número total de vértices en el grafo.
@@ -39,4 +30,14 @@ public:
      * @return Falso siempre, omitiendo la detección real de ciclos negativos.
      */
     bool ejecutarBellmanFord(int origenVertice, std::vector<int>& vectorDistancias);
+
+  private:
+    int numeroVertices;
+    struct Edge {
+      int origen;
+      int destino;
+      int peso;
+    };
+    std::vector<Edge> listaAristas;
+
 };

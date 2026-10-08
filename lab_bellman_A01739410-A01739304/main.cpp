@@ -1,11 +1,12 @@
 /**
  * Descripción: Programa principal para probar el funcionamiento del algoritmo de Bellman-Ford defectuoso.
  * Autor: Sandra E. Barajas Montiel
+ * Última modificación: Octavio & Franco | 2026-10-08
  */
 
+#include "GraphSolver.hpp"
 #include <iostream>
 #include <vector>
-#include "GraphSolver.hpp"
 
 using namespace std;
 

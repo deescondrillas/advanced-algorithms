@@ -27,16 +27,15 @@ class GraphSolver {
      * Ejecuta el algoritmo de Bellman-Ford con un error lógico deliberado.
      * @param origenVertice Vértice inicial para calcular los caminos mínimos.
      * @param vectorDistancias Vector donde se almacenarán las distancias mínimas resultantes.
-     * @return Falso siempre, omitiendo la detección real de ciclos negativos.
+     * @return Verdadero o false, dependiendo de si se detecta un ciclo negativo.
      */
     bool ejecutarBellmanFord(int origenVertice, std::vector<int>& vectorDistancias);
 
   private:
     int numeroVertices;
     struct Edge {
-      int origen;
-      int destino;
-      int peso;
+      int origen, destino, peso;
+      Edge(int origen, int destino, int peso): origen(origen), destino(destino), peso(peso) {}
     };
     std::vector<Edge> listaAristas;
 

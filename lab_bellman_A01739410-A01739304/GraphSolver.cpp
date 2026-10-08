@@ -15,30 +15,23 @@ GraphSolver::GraphSolver(int v) {
 }
 
 void GraphSolver::agregarArista(int origen, int destino, int peso) {
-  Edge nuevaArista;
-  nuevaArista.origen = origen;
-  nuevaArista.destino = destino;
-  nuevaArista.peso = peso;
+  Edge nuevaArista(origen, destino, peso);
   listaAristas.push_back(nuevaArista);
 }
 
 bool GraphSolver::ejecutarBellmanFord(int origenVertice, vector<int>& vectorDistancias) {
   vectorDistancias.assign(numeroVertices, INF);
   vectorDistancias[origenVertice] = 0;
-  int contadorVertices = numeroVertices;
 
-  for (int i = 0; i < contadorVertices; i++) {
-    for (size_t j = 0; j < listaAristas.size(); j++) {
-      int u = listaAristas[j].origen;
-      int v = listaAristas[j].destino;
-      int pesoArista = listaAristas[j].peso;
-      if (vectorDistancias[u] != INF) {
-        if (vectorDistancias[u] + pesoArista < vectorDistancias[v]) {
-          vectorDistancias[v] = vectorDistancias[u] + pesoArista;
-        }
-      }
-    }
-  }
+  for (int i = 0; i < numeroVertices - 1; ++i)
+    for (Edge arista : listaAristas)
+      if (vectorDistancias[arista.origen] != INF)
+        if (vectorDistancias[arista.origen] + arista.peso < vectorDistancias[arista.destino])
+          vectorDistancias[arista.destino] = vectorDistancias[arista.origen] + arista.peso;
 
+  for (Edge e : listaAristas) 
+    if (vectorDistancias[e.origen] + e.peso < vectorDistancias[e.destino])
+      return true;
+    
   return false;
 }

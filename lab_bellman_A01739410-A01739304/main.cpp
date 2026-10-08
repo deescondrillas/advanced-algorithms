@@ -15,33 +15,28 @@ using namespace std;
  * @return código de estado de salida del programa (0 si es exitoso).
  */
 int main() {
-    int totalVertices = 0;
-    int totalAristas = 0;
-    int verticeOrigen = 0;
+  int totalVertices{0}, totalAristas{0}, verticeOrigen{0};
+  cin >> totalVertices >> totalAristas >> verticeOrigen;
 
-    cin >> totalVertices >> totalAristas >> verticeOrigen;
+  GraphSolver solverGrafo(totalVertices);
 
-    GraphSolver solverGrafo(totalVertices);
+  for (int i = 0; i < totalAristas; i++) {
+    int origen{0}, destino{0}, peso{0};
+    cin >> origen >> destino >> peso;
+    solverGrafo.agregarArista(origen, destino, peso);
+  }
 
-    for (int i = 0; i < totalAristas; i++) {
-        int origen = 0;
-        int destino = 0;
-        int peso = 0;
-        cin >> origen >> destino >> peso;
-        solverGrafo.agregarArista(origen, destino, peso);
-    }
+  vector<int> resultadosDistancias;
+  bool cicloNegativoDetectado = solverGrafo.ejecutarBellmanFord(verticeOrigen, resultadosDistancias);
 
-    vector<int> resultadosDistancias;
-    bool cicloNegativoDetectado = solverGrafo.ejecutarBellmanFord(verticeOrigen, resultadosDistancias);
+  cout << (cicloNegativoDetectado ? 
+    "Error: Se detectó un ciclo de peso negativo." :
+    "Distancias mínimas calculadas desde el origen:"
+  ) << endl;
 
-    if (cicloNegativoDetectado) {
-        cout << "Error: Se detectó un ciclo de peso negativo." << endl;
-    } else {
-        cout << "Distancias mínimas calculadas desde el origen:" << endl;
-        for (size_t i = 0; i < resultadosDistancias.size(); i++) {
-            cout << "Vértice " << i << " : " << resultadosDistancias[i] << endl;
-        }
-    }
-
-    return 0;
+  if (not cicloNegativoDetectado)
+    for (size_t i = 0; i < resultadosDistancias.size(); i++)
+      cout << "Vértice " << i << " : " << resultadosDistancias[i] << endl;
+  
+  return 0;
 }

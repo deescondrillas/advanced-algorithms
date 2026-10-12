@@ -1,7 +1,7 @@
 """
- * Descripción: Implementación de función complementaria.
+ * Descripción: Implementación de función complementaria conteo de caracteres.
  * Autor: Sandra E. Barajas Montiel
- * Última modificación: Octavio & Franco | 2026-10-08
+ * Última modificación: Octavio & Franco | 2026-10-12
 """
 
 from pathlib import Path

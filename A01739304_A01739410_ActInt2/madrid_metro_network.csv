@@ -101,12 +101,12 @@ MAD_L2_QUEVEDO,Quevedo,MAD_L2_CANAL,Canal,MAD_L2,2,Las Rosas - Cuatro Caminos,1.
 MAD_L2_CANAL,Canal,MAD_L2_QUEVEDO,Quevedo,MAD_L2,2,Las Rosas - Cuatro Caminos,1.4248
 MAD_L2_CANAL,Canal,MAD_L2_CUATROCAMI,Cuatro Caminos,MAD_L2,2,Las Rosas - Cuatro Caminos,1.3009
 MAD_L2_CUATROCAMI,Cuatro Caminos,MAD_L2_CANAL,Canal,MAD_L2,2,Las Rosas - Cuatro Caminos,2.281
-MAD_L3_VILLAVERDE,Villaverde Alto,MAD_L3_SANCRISTOB,San Cristóbal,MAD_L3,3,Villaverde Alto - Moncloa,1.7593
-MAD_L3_SANCRISTOB,San Cristóbal,MAD_L3_VILLAVERDE,Villaverde Alto,MAD_L3,3,Villaverde Alto - Moncloa,2.0739
-MAD_L3_SANCRISTOB,San Cristóbal,MAD_L3_VILLAVERDE,Villaverde Bajo Cruce,MAD_L3,3,Villaverde Alto - Moncloa,2.7203
-MAD_L3_VILLAVERDE,Villaverde Bajo Cruce,MAD_L3_SANCRISTOB,San Cristóbal,MAD_L3,3,Villaverde Alto - Moncloa,1.6539
-MAD_L3_VILLAVERDE,Villaverde Bajo Cruce,MAD_L3_CIUDADDELO,Ciudad de los Ángeles,MAD_L3,3,Villaverde Alto - Moncloa,1.9148
-MAD_L3_CIUDADDELO,Ciudad de los Ángeles,MAD_L3_VILLAVERDE,Villaverde Bajo Cruce,MAD_L3,3,Villaverde Alto - Moncloa,2.474
+MAD_L3_VILLAVALTO,Villaverde Alto,MAD_L3_SANCRISTOB,San Cristóbal,MAD_L3,3,Villaverde Alto - Moncloa,1.7593
+MAD_L3_SANCRISTOB,San Cristóbal,MAD_L3_VILLAVALTO,Villaverde Alto,MAD_L3,3,Villaverde Alto - Moncloa,2.0739
+MAD_L3_SANCRISTOB,San Cristóbal,MAD_L3_VILLAVBAJO,Villaverde Bajo Cruce,MAD_L3,3,Villaverde Alto - Moncloa,2.7203
+MAD_L3_VILLAVBAJO,Villaverde Bajo Cruce,MAD_L3_SANCRISTOB,San Cristóbal,MAD_L3,3,Villaverde Alto - Moncloa,1.6539
+MAD_L3_VILLAVBAJO,Villaverde Bajo Cruce,MAD_L3_CIUDADDELO,Ciudad de los Ángeles,MAD_L3,3,Villaverde Alto - Moncloa,1.9148
+MAD_L3_CIUDADDELO,Ciudad de los Ángeles,MAD_L3_VILLAVBAJO,Villaverde Bajo Cruce,MAD_L3,3,Villaverde Alto - Moncloa,2.474
 MAD_L3_CIUDADDELO,Ciudad de los Ángeles,MAD_L3_CRUCES,Cruces,MAD_L3,3,Villaverde Alto - Moncloa,1.6207
 MAD_L3_CRUCES,Cruces,MAD_L3_CIUDADDELO,Ciudad de los Ángeles,MAD_L3,3,Villaverde Alto - Moncloa,1.3747
 MAD_L3_CRUCES,Cruces,MAD_L3_HOSPITAL12,Hospital 12 de Octubre,MAD_L3,3,Villaverde Alto - Moncloa,1.7194

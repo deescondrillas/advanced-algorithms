@@ -1,0 +1,48 @@
+Reading notebook: a collection of test texts.
+
+Better late than never.
+
+Reading opens doors and awakens ideas.
+
+Water and trees sustain life.
+
+The neighborhood library opens its doors at eight in the morning. Before the readers arrive, Helen checks the tables, arranges the chairs, and returns each book to its shelf. A sign near the entrance invites everyone to ask questions: knowing every title is not a requirement for finding a good story.
+
+A student is looking for information about the oceans. A little girl wants a story about dragons, and a neighbor asks for a guide to repairing bicycles. Helen listens to each person and suggests different paths. Sometimes one book is enough; at other times, comparing several sources and writing questions in a notebook is more useful.
+
+The reading club meets in the afternoon. Its members do not always agree about the ending of the novel, but they explain their reasons respectfully. When it is time to close, Helen looks at the notes left on the table. The library keeps books, and it also helps questions turn into conversations.
+
+There was a dry strip of soil in the school courtyard. The class decided to turn it into a small vegetable garden. First, the students measured the space, observed how many hours of sunlight it received, and drew a plan. Then they selected plants suited to those conditions instead of choosing seeds only for their appearance.
+
+Each team took responsibility for a task. Some students prepared the soil, others wrote labels, and another group organized the watering schedule. During the first week, they used too much water and puddles appeared. They reviewed their notes, reduced the amount, and discovered that roots needed moisture but also air.
+
+New leaves appeared as the days passed. Not all the seeds sprouted at the same time, and some never sprouted at all. The class recorded these results without erasing them. In the end, the students understood that caring for a garden requires patience: observing, making decisions, and learning from what actually happens.
+
+On Saturday, we left early for a nearby city. At the station, we checked the departure board, confirmed the destination, and put our tickets in a pocket that was easy to reach. We carried water, a notebook, and a map. The journey seemed simple, although a timetable change could affect our plans.
+
+Through the window, we saw buildings, fields, and a river that followed the train for several minutes. My brother wrote down the names of the stations. I calculated how long it would take to arrive, but soon stopped watching the clock. A conversation with another passenger gave us ideas for visiting the market and a square that was missing from our list.
+
+It started raining when we arrived. Instead of rushing to see everything, we found a cafe and chose two places nearby. We returned with fewer photographs than expected, but with a story to remember: sometimes a good journey depends on being willing to change the route.
+
+To study how water cools, we placed two identical containers on a table. We filled them with the same amount of water and measured the starting temperature. We covered one container and left the other open. Before beginning, we wrote a specific question: would using a lid change the cooling rate?
+
+We took readings every two minutes and recorded the values in a table. Nobody was allowed to adjust a number to make it match the prediction. When a measurement seemed unusual, we checked the instrument and wrote down the observation. We also recorded the room temperature and avoided moving the containers during the test.
+
+The experiment was repeated several times. The results were not identical, so we calculated averages and compared the differences. The exercise showed that an explanation needs data and clearly stated conditions. One measurement may suggest an idea, but repeating the procedure helps us judge how much confidence to place in it.
+
+Dear Grandma,
+
+Yesterday I found the blue notebook you gave me. Between its pages were a recipe, a shopping list, and a drawing of a house with enormous windows. It made me happy to recognize your handwriting and remember the afternoons when we cooked without paying much attention to the clock.
+
+Today I tried to make bread by following your instructions. The dough was sticky at first, and I thought I had made a mistake. I waited a few minutes, added a little flour, and continued kneading. While the bread was in the oven, I opened the window to listen to the birds in the garden.
+
+It was not exactly like yours, but we shared several slices at dinner. I kept a photograph and wrote down what I would change next time. When you visit, we can try again together. I have many questions and would love to hear your stories.
+
+With love,
+Lucy.
+
+A text file takes up space because its characters are represented by bytes. When certain symbols appear frequently, assigning shorter representations to them can be useful. Compression tries to take advantage of these patterns without losing the information that needs to be preserved.
+
+In a programming exercise, producing a small file is not enough. The original content must also be recovered and checked. Spaces, accented letters, and line endings are part of the text. If a program removes or changes them, the result may look correct while still containing differences.
+
+Tests should include documents of different sizes. A header may take up more space than a short sentence, while its cost is spread across many characters in a longer document. That is why the complete file should be measured and the comparison explained. A single number says little; combined with a clear procedure, it allows someone else to examine the result and repeat the experiment.

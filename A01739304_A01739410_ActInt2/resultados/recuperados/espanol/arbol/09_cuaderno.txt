@@ -1,0 +1,48 @@
+Cuaderno de lecturas: una colección de textos de prueba.
+
+Más vale tarde que nunca.
+
+La lectura abre puertas y despierta ideas.
+
+El agua y los árboles sostienen la vida.
+
+La biblioteca del barrio abre sus puertas a las ocho de la mañana. Antes de que lleguen los lectores, Elena revisa las mesas, acomoda las sillas y devuelve cada libro a su estante. En la entrada hay un cartel que invita a preguntar: nadie necesita conocer todos los títulos para encontrar una buena historia.
+
+Un estudiante busca información sobre los océanos. Una niña quiere leer un cuento de dragones y una vecina pregunta por un manual para reparar bicicletas. Elena escucha a cada persona y propone caminos distintos. A veces basta con un libro; otras veces conviene comparar varias fuentes y escribir las dudas en una libreta.
+
+Por la tarde se reúne el club de lectura. Sus integrantes no siempre están de acuerdo con el final de la novela, pero explican sus razones con respeto. Al cerrar, Elena observa las notas que dejaron sobre la mesa. La biblioteca conserva libros y también hace posible que las preguntas se conviertan en conversaciones.
+
+En el patio de la escuela había una franja de tierra seca. El grupo decidió convertirla en un pequeño huerto. Primero midieron el espacio, observaron cuántas horas recibía sol y dibujaron un plano. Después eligieron plantas que pudieran crecer en esas condiciones, en lugar de comprar semillas solamente por su aspecto.
+
+Cada equipo asumió una tarea. Unos prepararon el suelo, otros escribieron etiquetas y otros organizaron el calendario de riego. Durante la primera semana regaron demasiado y aparecieron charcos. Revisaron sus apuntes, redujeron la cantidad de agua y comprobaron que las raíces necesitaban humedad, pero también aire.
+
+Con el paso de los días surgieron hojas nuevas. No todas las semillas germinaron al mismo tiempo y algunas nunca lo hicieron. El grupo registró esos resultados sin borrarlos. Al final comprendieron que cuidar un huerto exige paciencia: observar, tomar decisiones y aprender de lo que realmente ocurre.
+
+El sábado salimos temprano hacia una ciudad cercana. En la estación consultamos el tablero, comprobamos el destino y guardamos los boletos en un bolsillo fácil de alcanzar. Llevábamos agua, una libreta y un mapa. El viaje parecía sencillo, aunque sabíamos que cualquier cambio de horario podía modificar el plan.
+
+Desde la ventana vimos edificios, campos y un río que acompañó al tren durante varios minutos. Mi hermano anotaba los nombres de las estaciones. Yo calculaba cuánto tiempo faltaba para llegar, pero pronto dejé de mirar el reloj. Una conversación con otra pasajera nos dio ideas para conocer el mercado y una plaza que no aparecía en nuestra lista.
+
+Al llegar empezó a llover. En lugar de recorrer todo a prisa, buscamos un café y elegimos dos lugares cercanos. Volvimos con menos fotografías de las previstas, pero con una historia que recordar: a veces un buen viaje depende de saber cambiar de ruta.
+
+Para estudiar el enfriamiento del agua, colocamos dos recipientes iguales sobre una mesa. Llenamos ambos con la misma cantidad y medimos la temperatura inicial. Cubrimos uno y dejamos el otro abierto. Antes de empezar escribimos una pregunta concreta: ¿cambiaría la velocidad de enfriamiento al usar una tapa?
+
+Tomamos lecturas cada dos minutos y anotamos los valores en una tabla. Nadie debía ajustar un número para que coincidiera con la predicción. Cuando una medición parecía extraña, revisábamos el instrumento y registrábamos la observación. También anotamos la temperatura de la habitación y evitamos mover los recipientes durante la prueba.
+
+La experiencia se repitió varias veces. Los resultados no fueron idénticos, así que calculamos promedios y comparamos las diferencias. El ejercicio mostró que una explicación necesita datos y condiciones claras. Una sola medición puede orientar una idea, pero repetir el procedimiento permite valorar mejor cuánto podemos confiar en ella.
+
+Querida abuela:
+
+Ayer encontré la libreta azul que me regalaste. Entre sus páginas había una receta, una lista de compras y el dibujo de una casa con ventanas enormes. Me dio gusto reconocer tu letra y recordar aquellas tardes en las que cocinábamos sin mirar demasiado el reloj.
+
+Hoy intenté preparar el pan siguiendo tus indicaciones. La masa quedó pegajosa al principio y pensé que había cometido un error. Esperé unos minutos, añadí un poco de harina y continué amasando. Mientras el pan estaba en el horno, abrí la ventana para escuchar a los pájaros del jardín.
+
+No quedó exactamente igual al tuyo, pero compartimos varias rebanadas durante la cena. Guardé una fotografía y escribí lo que cambiaría la próxima vez. Cuando vengas podremos intentarlo juntos. Tengo muchas preguntas y también ganas de escuchar tus historias.
+
+Con cariño,
+Lucía.
+
+Un archivo de texto ocupa espacio porque sus caracteres se representan mediante bytes. Cuando ciertos símbolos aparecen muchas veces, puede ser útil asignarles representaciones más cortas. La compresión busca aprovechar esas regularidades sin perder la información que se desea conservar.
+
+En una práctica de programación no basta con producir un archivo pequeño. También hay que recuperar el contenido original y comprobarlo. Los espacios, las letras acentuadas y los saltos de línea forman parte del texto. Si el programa los elimina o los cambia, el resultado puede parecer correcto a simple vista y aun así contener diferencias.
+
+Las pruebas deben incluir documentos de distintos tamaños. Un encabezado puede ocupar más que una frase breve, mientras que su costo se reparte entre muchos caracteres en un documento largo. Por eso conviene medir el archivo completo y explicar qué se está comparando. Un número aislado dice poco; acompañado de un procedimiento claro, permite revisar y repetir el experimento.

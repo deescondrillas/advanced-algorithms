@@ -1,0 +1,5 @@
+Un fichier texte occupe de l'espace parce que ses caractères sont représentés par des octets. Lorsque certains symboles apparaissent souvent, il peut être utile de leur attribuer des représentations plus courtes. La compression cherche à exploiter ces régularités sans perdre l'information que l'on souhaite conserver.
+
+Dans un exercice de programmation, produire un petit fichier ne suffit pas. Il faut aussi retrouver le contenu original et le vérifier. Les espaces, les lettres accentuées et les sauts de ligne font partie du texte. Si le programme les supprime ou les transforme, le résultat peut sembler correct tout en présentant des différences.
+
+Les essais doivent comprendre des documents de plusieurs tailles. Un en-tête peut occuper plus de place qu'une phrase courte, alors que son coût se répartit entre de nombreux caractères dans un long document. Il convient donc de mesurer le fichier entier et de préciser la comparaison. Un nombre isolé informe peu ; accompagné d'une procédure claire, il permet de vérifier et de répéter l'expérience.

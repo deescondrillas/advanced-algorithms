@@ -1,0 +1,5 @@
+Un archivo de texto ocupa espacio porque sus caracteres se representan mediante bytes. Cuando ciertos símbolos aparecen muchas veces, puede ser útil asignarles representaciones más cortas. La compresión busca aprovechar esas regularidades sin perder la información que se desea conservar.
+
+En una práctica de programación no basta con producir un archivo pequeño. También hay que recuperar el contenido original y comprobarlo. Los espacios, las letras acentuadas y los saltos de línea forman parte del texto. Si el programa los elimina o los cambia, el resultado puede parecer correcto a simple vista y aun así contener diferencias.
+
+Las pruebas deben incluir documentos de distintos tamaños. Un encabezado puede ocupar más que una frase breve, mientras que su costo se reparte entre muchos caracteres en un documento largo. Por eso conviene medir el archivo completo y explicar qué se está comparando. Un número aislado dice poco; acompañado de un procedimiento claro, permite revisar y repetir el experimento.

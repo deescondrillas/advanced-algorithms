@@ -5,7 +5,6 @@
 """
 
 from pathlib import Path
-import runpy
 import sys
 
 
@@ -30,7 +29,7 @@ def generarFrecuencias(file_name):
 
 if __name__ == "__main__":
 	base_dir = Path(__file__).resolve().parent
-	file_name = sys.argv[1] if len(sys.argv) > 1 else base_dir / "texto_prueba.txt"
+	file_name = sys.argv[1] if len(sys.argv) > 1 else base_dir / "textos" / "texto_prueba.txt"
 	s, freq = generarFrecuencias(file_name)
 	if not s:
 		raise SystemExit("El archivo está vacío; no se puede construir el árbol.")
@@ -41,8 +40,8 @@ if __name__ == "__main__":
 	for i in range(len(s)):
 		print(f"{s[i]!r} = {freq[i]}")
 
-	base = runpy.run_path(str(base_dir / "05_uffman.py"))
-	codes_dic, root = base["huffmanCodes"](s, freq)
+	from huffman_base import construirHuffman
+	codes_dic, root = construirHuffman(s, freq)
 	print("\nÁrbol de Huffman:")
 	print(root)
 

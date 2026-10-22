@@ -1,0 +1,48 @@
+Carnet de lectures : une collection de textes de test.
+
+Petit à petit, l'oiseau fait son nid.
+
+La lecture ouvre des portes et nourrit les idées.
+
+L'eau et les arbres soutiennent la vie.
+
+La bibliothèque du quartier ouvre ses portes à huit heures du matin. Avant l'arrivée des lecteurs, Élise vérifie les tables, range les chaises et remet chaque livre sur son étagère. À l'entrée, une affiche invite à poser des questions : il n'est pas nécessaire de connaître tous les titres pour trouver une bonne histoire.
+
+Un étudiant cherche des informations sur les océans. Une petite fille veut lire un conte de dragons et une voisine demande un manuel pour réparer des vélos. Élise écoute chaque personne et propose des pistes différentes. Parfois, un livre suffit ; dans d'autres cas, il vaut mieux comparer plusieurs sources et noter ses questions dans un carnet.
+
+L'après-midi, le club de lecture se réunit. Ses membres ne sont pas toujours d'accord sur la fin du roman, mais ils expliquent leurs raisons avec respect. Au moment de fermer, Élise regarde les notes laissées sur la table. La bibliothèque conserve des livres et permet aussi aux questions de devenir des conversations.
+
+Dans la cour de l'école, une bande de terre était sèche. Le groupe a décidé d'en faire un petit potager. Les élèves ont d'abord mesuré l'espace, observé les heures d'ensoleillement et dessiné un plan. Ensuite, ils ont choisi des plantes adaptées à ces conditions, au lieu d'acheter des graines uniquement pour leur apparence.
+
+Chaque équipe a pris une responsabilité. Certains ont préparé le sol, d'autres ont écrit les étiquettes et d'autres encore ont organisé le calendrier d'arrosage. Pendant la première semaine, ils ont donné trop d'eau et des flaques sont apparues. Ils ont relu leurs notes, réduit les quantités et constaté que les racines avaient besoin d'humidité, mais aussi d'air.
+
+Au fil des jours, de nouvelles feuilles ont poussé. Toutes les graines n'ont pas germé en même temps et certaines n'ont jamais germé. Le groupe a conservé ces résultats dans son carnet. Les élèves ont compris que prendre soin d'un jardin demande de la patience : observer, décider et apprendre de ce qui se passe réellement.
+
+Samedi, nous sommes partis tôt pour une ville voisine. À la gare, nous avons consulté le tableau, vérifié la destination et rangé les billets dans une poche facile d'accès. Nous avions de l'eau, un carnet et une carte. Le trajet semblait simple, même si un changement d'horaire pouvait modifier notre programme.
+
+Par la fenêtre, nous avons vu des immeubles, des champs et une rivière qui a accompagné le train pendant plusieurs minutes. Mon frère notait les noms des gares. Je calculais le temps restant avant l'arrivée, puis j'ai cessé de regarder ma montre. Une conversation avec une autre voyageuse nous a donné envie de découvrir le marché et une place absente de notre liste.
+
+À notre arrivée, la pluie a commencé. Au lieu de tout visiter en courant, nous avons cherché un café et choisi deux endroits proches. Nous sommes rentrés avec moins de photographies que prévu, mais avec une histoire à raconter : parfois, réussir un voyage demande de savoir changer de chemin.
+
+Pour étudier le refroidissement de l'eau, nous avons placé deux récipients identiques sur une table. Nous les avons remplis avec la même quantité d'eau et mesuré la température initiale. Nous avons couvert le premier et laissé le second ouvert. Avant de commencer, nous avons écrit une question précise : un couvercle changerait-il la vitesse de refroidissement ?
+
+Nous avons relevé les températures toutes les deux minutes et inscrit les valeurs dans un tableau. Personne ne devait modifier un nombre pour le faire correspondre à la prévision. Lorsqu'une mesure semblait étrange, nous vérifiions l'instrument et ajoutions une remarque. Nous avons aussi noté la température de la pièce et évité de déplacer les récipients.
+
+L'expérience a été répétée plusieurs fois. Les résultats n'étaient pas identiques ; nous avons donc calculé des moyennes et comparé les différences. L'exercice a montré qu'une explication exige des données et des conditions claires. Une mesure peut suggérer une idée, mais répéter la procédure aide à évaluer la confiance que l'on peut lui accorder.
+
+Chère grand-mère,
+
+Hier, j'ai retrouvé le carnet bleu que tu m'avais offert. Entre ses pages, il y avait une recette, une liste de courses et le dessin d'une maison aux grandes fenêtres. J'ai reconnu ton écriture avec plaisir et repensé aux après-midi où nous cuisinions sans trop regarder l'heure.
+
+Aujourd'hui, j'ai essayé de préparer du pain en suivant tes indications. La pâte était collante au début et j'ai cru m'être trompée. J'ai attendu quelques minutes, ajouté un peu de farine et continué à pétrir. Pendant que le pain cuisait, j'ai ouvert la fenêtre pour écouter les oiseaux du jardin.
+
+Il n'était pas exactement comme le tien, mais nous en avons partagé plusieurs tranches au dîner. J'ai gardé une photographie et noté ce que je changerais la prochaine fois. Quand tu viendras, nous pourrons recommencer ensemble. J'ai beaucoup de questions et très envie d'écouter tes histoires.
+
+Je t'embrasse,
+Lucie.
+
+Un fichier texte occupe de l'espace parce que ses caractères sont représentés par des octets. Lorsque certains symboles apparaissent souvent, il peut être utile de leur attribuer des représentations plus courtes. La compression cherche à exploiter ces régularités sans perdre l'information que l'on souhaite conserver.
+
+Dans un exercice de programmation, produire un petit fichier ne suffit pas. Il faut aussi retrouver le contenu original et le vérifier. Les espaces, les lettres accentuées et les sauts de ligne font partie du texte. Si le programme les supprime ou les transforme, le résultat peut sembler correct tout en présentant des différences.
+
+Les essais doivent comprendre des documents de plusieurs tailles. Un en-tête peut occuper plus de place qu'une phrase courte, alors que son coût se répartit entre de nombreux caractères dans un long document. Il convient donc de mesurer le fichier entier et de préciser la comparaison. Un nombre isolé informe peu ; accompagné d'une procédure claire, il permet de vérifier et de répéter l'expérience.

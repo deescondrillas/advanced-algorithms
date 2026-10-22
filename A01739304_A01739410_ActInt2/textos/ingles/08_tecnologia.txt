@@ -1,0 +1,5 @@
+A text file takes up space because its characters are represented by bytes. When certain symbols appear frequently, assigning shorter representations to them can be useful. Compression tries to take advantage of these patterns without losing the information that needs to be preserved.
+
+In a programming exercise, producing a small file is not enough. The original content must also be recovered and checked. Spaces, accented letters, and line endings are part of the text. If a program removes or changes them, the result may look correct while still containing differences.
+
+Tests should include documents of different sizes. A header may take up more space than a short sentence, while its cost is spread across many characters in a longer document. That is why the complete file should be measured and the comparison explained. A single number says little; combined with a clear procedure, it allows someone else to examine the result and repeat the experiment.

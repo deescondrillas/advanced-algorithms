@@ -1,0 +1,5 @@
+To study how water cools, we placed two identical containers on a table. We filled them with the same amount of water and measured the starting temperature. We covered one container and left the other open. Before beginning, we wrote a specific question: would using a lid change the cooling rate?
+
+We took readings every two minutes and recorded the values in a table. Nobody was allowed to adjust a number to make it match the prediction. When a measurement seemed unusual, we checked the instrument and wrote down the observation. We also recorded the room temperature and avoided moving the containers during the test.
+
+The experiment was repeated several times. The results were not identical, so we calculated averages and compared the differences. The exercise showed that an explanation needs data and clearly stated conditions. One measurement may suggest an idea, but repeating the procedure helps us judge how much confidence to place in it.

@@ -1,0 +1,5 @@
+Pour étudier le refroidissement de l'eau, nous avons placé deux récipients identiques sur une table. Nous les avons remplis avec la même quantité d'eau et mesuré la température initiale. Nous avons couvert le premier et laissé le second ouvert. Avant de commencer, nous avons écrit une question précise : un couvercle changerait-il la vitesse de refroidissement ?
+
+Nous avons relevé les températures toutes les deux minutes et inscrit les valeurs dans un tableau. Personne ne devait modifier un nombre pour le faire correspondre à la prévision. Lorsqu'une mesure semblait étrange, nous vérifiions l'instrument et ajoutions une remarque. Nous avons aussi noté la température de la pièce et évité de déplacer les récipients.
+
+L'expérience a été répétée plusieurs fois. Les résultats n'étaient pas identiques ; nous avons donc calculé des moyennes et comparé les différences. L'exercice a montré qu'une explication exige des données et des conditions claires. Une mesure peut suggérer une idée, mais répéter la procédure aide à évaluer la confiance que l'on peut lui accorder.

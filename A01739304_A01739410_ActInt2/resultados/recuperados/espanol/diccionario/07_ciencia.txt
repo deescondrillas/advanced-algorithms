@@ -1,0 +1,5 @@
+Para estudiar el enfriamiento del agua, colocamos dos recipientes iguales sobre una mesa. Llenamos ambos con la misma cantidad y medimos la temperatura inicial. Cubrimos uno y dejamos el otro abierto. Antes de empezar escribimos una pregunta concreta: ¿cambiaría la velocidad de enfriamiento al usar una tapa?
+
+Tomamos lecturas cada dos minutos y anotamos los valores en una tabla. Nadie debía ajustar un número para que coincidiera con la predicción. Cuando una medición parecía extraña, revisábamos el instrumento y registrábamos la observación. También anotamos la temperatura de la habitación y evitamos mover los recipientes durante la prueba.
+
+La experiencia se repitió varias veces. Los resultados no fueron idénticos, así que calculamos promedios y comparamos las diferencias. El ejercicio mostró que una explicación necesita datos y condiciones claras. Una sola medición puede orientar una idea, pero repetir el procedimiento permite valorar mejor cuánto podemos confiar en ella.

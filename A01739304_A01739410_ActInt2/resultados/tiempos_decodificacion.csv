@@ -1,0 +1,7 @@
+﻿archivo,idioma,metodo,repeticiones,promedio_us,desviacion_estandar_us
+10_don_quijote.txt,espanol,diccionario,500,10859.6862,3240.227359212365
+10_don_quijote.txt,espanol,arbol,500,7185.1458,2301.8166679446945
+10_candide.txt,frances,diccionario,500,13113.0502,5119.112777256671
+10_candide.txt,frances,arbol,500,8757.918,3374.829665624616
+10_pride_and_prejudice.txt,ingles,diccionario,500,13037.8848,5046.687584473554
+10_pride_and_prejudice.txt,ingles,arbol,500,8355.7116,3053.2124170966663

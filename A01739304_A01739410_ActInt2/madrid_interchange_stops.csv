@@ -1,4 +1,4 @@
-individual_stop_id,shared_stop_id,stop_name
+station_id,intersection_id,stop_name
 MAD_L4_ALONSOMART,MAD_L0_ALONSOMART,Alonso Martínez
 MAD_L5_ALONSOMART,MAD_L0_ALONSOMART,Alonso Martínez
 MAD_L3_ARGÜELLES,MAD_L0_ARGÜELLES,Argüelles
@@ -44,5 +44,5 @@ MAD_L2_SOL,MAD_L0_SOL,Sol
 MAD_L3_SOL,MAD_L0_SOL,Sol
 MAD_L2_VENTAS,MAD_L0_VENTAS,Ventas
 MAD_L5_VENTAS,MAD_L0_VENTAS,Ventas
-MAD_L3_EMBAJADORE, MAD_L0_ACA-EMBA,Acacias-Embajadores
-MAD_L5_ACACIAS, MAD_L0_ACA-EMBA,Acacias-Embajadores
+MAD_L3_EMBAJADORE,MAD_L0_ACAEMBA,Acacias-Embajadores
+MAD_L5_ACACIAS,MAD_L0_ACAEMBA,Acacias-Embajadores
